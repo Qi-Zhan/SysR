@@ -1,0 +1,67 @@
+// ---------- CTE: Interrupt Handling and Context Switching ----------
+
+use core::arch::asm;
+
+/// init exception entry, 
+pub fn cte_init() {
+    #[cfg(target_arch="riscv32")]
+    unsafe {
+        asm!(
+            "csrw mtvec, {x0}",
+            x0 = in(reg) 0x100,
+        );
+    }
+}
+
+pub struct Context {
+
+}
+
+pub fn yield_() {
+    #[cfg(target_arch="riscv32")]
+    unsafe {
+        asm!(
+            "ecall",
+        );
+    }
+}
+
+pub fn ienable() -> bool {
+    let mut old: u32 = 0;
+    #[cfg(target_arch="riscv32")]
+    unsafe {
+        asm!(
+            "csrr {x0}, mie",
+            "csrrw {x0}, mie, {x1}",
+            "andi {x0}, {x0}, 0x80",
+            "slli {x0}, {x0}, 0x1f",
+            "srli {x0}, {x0}, 0x1f",
+            x0 = out(reg) old,
+            x1 = in(reg) 0x80,
+        );
+    }
+    old != 0
+}
+
+pub fn iset(enable: bool) {
+    #[cfg(target_arch="riscv32")]
+    unsafe {
+        asm!(
+            "csrrw x0, mie, {x1}",
+            x1 = in(reg) if enable { 0x80 } else { 0 },
+        );
+    }
+}
+
+pub enum Event {
+    Null,
+    Yield,
+    Syscall,
+    Pagefault,
+    Error,
+    IrqTimer,
+    IrqIodev,
+}
+
+// Context *kcontext    (Area kstack, void (*entry)(void *), void *arg);
+
