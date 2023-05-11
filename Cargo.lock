@@ -3,10 +3,6 @@
 version = 3
 
 [[package]]
-name = "am4r"
-version = "0.1.0"
-
-[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -74,6 +70,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "ram"
+version = "0.1.0"
+
+[[package]]
 name = "rand"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -104,6 +104,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "rapps"
+version = "0.1.0"
+
+[[package]]
 name = "rc"
 version = "0.1.0"
 
@@ -121,7 +125,7 @@ dependencies = [
 name = "ros"
 version = "0.1.0"
 dependencies = [
- "am4r",
+ "ram",
 ]
 
 [[package]]

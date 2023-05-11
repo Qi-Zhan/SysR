@@ -4,5 +4,6 @@ members = [
     "rc",
     "ros",
     "remu",
-    "am4r",
+    "ram",
+    "rapps",
 ]

@@ -3,12 +3,12 @@
 version = 3
 
 [[package]]
-name = "am4r"
+name = "ram"
 version = "0.1.0"
 
 [[package]]
 name = "ros"
 version = "0.1.0"
 dependencies = [
- "am4r",
+ "ram",
 ]

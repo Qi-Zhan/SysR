@@ -3,7 +3,7 @@ pub trait IO  {
     fn match_(&self, addr: u64) -> bool;
     fn read(&mut self, addr: u64) -> Option<u32>;
     fn write(&mut self, addr: u64, value: u64);
-    fn update(&mut self,);
+    fn update(&mut self);
     fn name(&self) -> &str;
 }
     

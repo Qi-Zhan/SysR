@@ -28,7 +28,7 @@ pub(super) struct Breakpoints {
 impl Breakpoints {
     pub(super) fn new() -> Breakpoints {
         let breakpoint = Breakpoint {
-            valid: true,
+            valid: false,
             exp: String::from("0"),
             original_value: 0,
         };

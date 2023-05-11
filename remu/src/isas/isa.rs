@@ -9,15 +9,11 @@ pub trait ISA: MemoryModel + RegisterModel + Sized {
     /// decide whether 32bit or 64bit
     fn xlen(&self) -> u32;
 
+    #[inline]
     fn run(&mut self) -> Result<(), RError> {
         loop {
             self.step()?;
         }
-    }
-
-    // TODO: consider it 
-    fn debug() -> bool {
-        false
     }
 
     fn load_from_assembly(strs: Vec<&str>) -> Result<Self, RError>;
@@ -25,7 +21,6 @@ pub trait ISA: MemoryModel + RegisterModel + Sized {
     fn step(&mut self) -> Result<(), RError> {
         let pc = self.pc();
         let inst_code = self.fetch_inst(pc)?;
-
 
         match self.execute(inst_code) {
             Ok(next_pc) => {
@@ -38,6 +33,7 @@ pub trait ISA: MemoryModel + RegisterModel + Sized {
 
     fn device_update(&mut self) -> Result<(), RError>;
 
+    #[inline]
     fn fetch_inst(&mut self, pc: u32) -> Result<u32, RError> {
         Ok(self.load_mem(pc, 4).unwrap())
     }
@@ -48,13 +44,5 @@ pub trait ISA: MemoryModel + RegisterModel + Sized {
 
     fn execute_assem(&mut self, assembly: &str) -> Result<u32, RError>;
 
-    fn update_pc(&mut self, pc: u32) {
-        self.write_register_by_name("pc", pc);
-    }
-
-
-    fn pc(&self) -> u32 {
-        self.read_register_by_name("pc").unwrap()
-    }
 
 }

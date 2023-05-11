@@ -1,5 +1,8 @@
 use lazy_static::lazy_static;
-use std::{collections::HashMap, ops::{Index, IndexMut}};
+use std::{
+    collections::HashMap,
+    ops::{Index, IndexMut},
+};
 
 use crate::isas::reg::RegisterModel;
 
@@ -19,25 +22,25 @@ lazy_static! {
         for i in 0..REG_NUM {
             m.insert(INDEX2NAME[i], i as u32);
         }
-        m         
+        m
     };
 
     static ref INDEX2CSR: HashMap<u16, &'static str> = {
         let csr_list = vec![
-            (0x001, "fflags"), (0x002, "frm"), (0x003, "fcsr"), 
+            (0x001, "fflags"), (0x002, "frm"), (0x003, "fcsr"),
             (0x100, "sstatus"), (0x104, "sie"), (0x105, "stvec"),
-            (0x106, "scounteren"), (0x140, "sscratch"), (0x141, "sepc"), 
-            (0x142, "scause"), (0x143, "stval"), (0x144, "sip"), 
-            (0x180, "satp"), 
-            (0xC00, "cyclel"), (0xC01, "time"), (0xC02, "instret"), 
-            // TODO: Add hpmcounter* 
+            (0x106, "scounteren"), (0x140, "sscratch"), (0x141, "sepc"),
+            (0x142, "scause"), (0x143, "stval"), (0x144, "sip"),
+            (0x180, "satp"),
+            (0xC00, "cyclel"), (0xC01, "time"), (0xC02, "instret"),
+            // TODO: Add hpmcounter*
             (0xC80, "cycleh"), (0xC81, "timeh"), (0xC82, "instreth"),
             // TODO: Add hpmcounter*h
-            (0x300, "mstatus"), (0x301, "misa"), (0x302, "medeleg"), 
-            (0x303, "mideleg"), (0x304, "mie"), (0x305, "mtvec"), 
-            (0x306, "mcounteren"), (0x310, "mscratch"), (0x340, "mscratch"), 
+            (0x300, "mstatus"), (0x301, "misa"), (0x302, "medeleg"),
+            (0x303, "mideleg"), (0x304, "mie"), (0x305, "mtvec"),
+            (0x306, "mcounteren"), (0x310, "mscratch"), (0x340, "mscratch"),
             (0x341, "mepc"), (0x342, "mcause"), (0x343, "mtval"),
-            (0x344, "mip"), (0x34A, "mtinst"), 
+            (0x344, "mip"), (0x34A, "mtinst"),
             (0x7A0, "mcycle"), (0x7A1, "minstret"), (0xB00, "mcycleh"), (0xB01, "minstreth"),
             (0x300, "mstatus")
             ];
@@ -55,8 +58,6 @@ lazy_static! {
         });
         m
     };
-
-
 
 }
 
@@ -91,7 +92,6 @@ impl Regs {
         }
         INDEX2NAME[index as usize].to_string()
     }
-
 }
 
 impl Index<u32> for Regs {
@@ -118,16 +118,15 @@ impl IndexMut<u32> for Regs {
 }
 
 impl RegisterModel for Regs {
+    #[inline]
+    fn pc(&self) -> u32 {
+        self.pc
+    }
 
-    // fn read_register(&self, index: u32) -> Option<u32> {
-    //     if index > REG_NUM as u32 {
-    //         return None;
-    //     }
-    //     if index == 0 {
-    //         return Some(0);
-    //     }
-    //     Some(self.regs[index as usize])
-    // }
+    #[inline]
+    fn update_pc(&mut self, pc: u32) {
+        self.pc = pc;
+    }
 
     fn name_to_index(&self, name: &str) -> Option<u32> {
         if let Some(index) = name.strip_prefix('x') {
@@ -145,14 +144,9 @@ impl RegisterModel for Regs {
         let index = self.name_to_index(name);
         match index {
             Some(index) => Some(self[index]),
-            None => match name {
-                "pc" => Some(self.pc),
-                _ => {
-                    match CSR2INDEX.get(name) {
-                        Some(index) => self.read_register_previlege((*index).into()),
-                        None => None,
-                    }
-                }
+            None => match CSR2INDEX.get(name) {
+                Some(index) => self.read_register_previlege((*index).into()),
+                None => None,
             },
         }
     }
@@ -171,24 +165,15 @@ impl RegisterModel for Regs {
         self.csr[index as usize] = value;
     }
 
-    // fn write_register(&mut self, index: u32, value: u32) {
-    //     if index <= 31 {
-    //         self.regs[index as usize] = value;
-    //     }
-    // }
-
     fn write_register_by_name(&mut self, name: &str, value: u32) {
         let index = self.name_to_index(name);
         match index {
             Some(index) => self[index] = value,
-            None => match name {
-                "pc" => self.pc = value,
-                _ => {
-                    if let Some(index) = CSR2INDEX.get(name) { 
-                        self.write_register_previlege((*index).into(), value) 
-                    }
+            None => {
+                if let Some(index) = CSR2INDEX.get(name) {
+                    self.write_register_previlege((*index).into(), value)
                 }
-            },
+            }
         }
     }
 

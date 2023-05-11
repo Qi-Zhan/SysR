@@ -2,7 +2,6 @@ use crate::isas::isa::ISA;
 
 pub(super) fn eval(cpu: &mut impl ISA, exp: &str) -> Option<u64> {
     let tokens = tokenize(exp)?;
-    // println!("{:?}", tokens);
     eval_tokens(cpu, &tokens, 0, tokens.len() - 1)
 }
 
@@ -14,7 +13,12 @@ fn eval_tokens(cpu: &mut impl ISA, tokens: &[Token], start: usize, end: usize) -
     if start == end {
         match &tokens[start] {
             Token::Number(n) => Some(*n),
-            Token::Register(r) => cpu.read_register_by_name(r).map(|v| v as u64),
+            Token::Register(r) => {
+                if r == "pc" {
+                    return Some(cpu.pc() as u64);
+                }
+                cpu.read_register_by_name(r).map(|v| v as u64)
+            }
             _ => None,
         }
     } else {
@@ -273,7 +277,7 @@ fn test_eval() {
 
     let mut cpu = cpu::RiscvCPU::default();
 
-    cpu.write_register_by_name("pc", 0x1000);
+    cpu.update_pc(0x1000);
     let exp = "1+2 * $pc";
     let value = eval(&mut cpu, exp).unwrap();
     assert_eq!(value, 0x2001);

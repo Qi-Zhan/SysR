@@ -14,6 +14,10 @@ pub trait RegisterModel: Index<u32, Output = u32> + IndexMut<u32> {
 
     fn read_register_previlege(&self, index: u32) -> Option<u32>;
     fn write_register_previlege(&mut self, index: u32, value: u32);
-    
+
+    fn pc(&self) -> u32;
+
+    fn update_pc(&mut self, pc: u32);
+
 }
 

@@ -17,27 +17,32 @@ type Opcode = u32;
 type Csr = u32;
 
 
-
+#[inline]
 fn opcode(code: u32) -> u32 {
     code & 0x7f
 }
 
+#[inline]
 fn src(code: u32) -> Src {
     ((code >> 15) & 0x1f, (code >> 20) & 0x1f)
 }
 
+#[inline]
 fn dst(code: u32) -> Dst {
     (code >> 7) & 0x1f
 }
 
+#[inline]
 fn fun3(code: u32) -> Fun3 {
     (code >> 12) & 0x7
 }
 
+#[inline]
 fn fun7(code: u32) -> Fun7 {
     (code >> 25) & 0x7f
 }
 
+#[inline]
 fn imm(code: u32) -> Imm {
     match opcode(code) {
         0b0110111 | 0b0010111 => code & 0xfffff000, // U-type
@@ -85,10 +90,12 @@ fn imm(code: u32) -> Imm {
     }
 }
 
+#[inline]
 fn csr(code: u32) -> Csr {
     (code >> 20) & 0xfff
 }
 
+#[inline]
 fn get(code: u32, high: u32, low: u32) -> u32 {
     (code >> low) & ((1 << (high - low + 1)) - 1)
 }
@@ -1062,4 +1069,9 @@ mod tests {
         cpu.execute(code).unwrap();
         assert_eq!(cpu.read_register_by_name("ra").unwrap(), 0x80000000);
     }
+
+    // #[test]
+    // fn test_mult_div() {
+
+    // }
 }

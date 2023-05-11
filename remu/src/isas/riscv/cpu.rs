@@ -67,27 +67,47 @@ impl MemoryModel for RiscvCPU {
 }
 
 impl RegisterModel for RiscvCPU {
+
+    #[inline]
     fn read_register_by_name(&self, name: &str) -> Option<u32> {
         self.regs.read_register_by_name(name)
     }
 
+    #[inline]
     fn write_register_by_name(&mut self, name: &str, value: u32) {
         self.regs.write_register_by_name(name, value);
     }
+
+    #[inline]
     fn name_to_index(&self, name: &str) -> Option<u32> {
         self.regs.name_to_index(name)
     }
+
+    #[inline]
     fn iter(&self) -> Box<dyn Iterator<Item = (String, u32)>> {
         self.regs.iter()
     }
 
+    #[inline]
     fn read_register_previlege(&self, index: u32) -> Option<u32> {
         self.regs.read_register_previlege(index)
     }
 
+    #[inline]
     fn write_register_previlege(&mut self, index: u32, value: u32) {
         self.regs.write_register_previlege(index, value);
     }
+
+    #[inline]
+    fn pc(&self) -> u32 {
+        self.regs.pc()
+    }
+
+    #[inline]
+    fn update_pc(&mut self, pc: u32) {
+        self.regs.update_pc(pc);
+    }
+
 }
 
 impl ISA for RiscvCPU {
@@ -111,11 +131,11 @@ impl ISA for RiscvCPU {
 
     fn execute(&mut self, inst_code: u32) -> Result<u32, RError> {
         // every time execute an instruction, mcycle and minstret should be increased
-        self.write_register_by_name("mcycle", self.read_register_by_name("mcycle").unwrap() + 1);
-        self.write_register_by_name(
-            "minstret",
-            self.read_register_by_name("minstret").unwrap() + 1,
-        );
+        // self.write_register_by_name("mcycle", self.read_register_by_name("mcycle").unwrap() + 1);
+        // self.write_register_by_name(
+        //     "minstret",
+        //     self.read_register_by_name("minstret").unwrap() + 1,
+        // );
         let inst = Instruction::decode(inst_code)?;
         inst.execute(self)
     }
