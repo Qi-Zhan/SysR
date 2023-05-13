@@ -214,75 +214,79 @@ fn find_delimiter(exp: &[Token], start: usize, end: usize) -> Option<usize> {
     dele
 }
 
-#[test]
-fn test_tokenize() {
-    let exp = "1+2 * $x0";
-    let tokens = tokenize(exp).unwrap();
-    assert_eq!(
-        tokens,
-        vec![
-            Token::Number(1),
-            Token::Operator(Op::Add),
-            Token::Number(2),
-            Token::Operator(Op::Mul),
-            Token::Register("x0".to_string()),
-        ]
-    );
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_tokenize() {
+        let exp = "1+2 * $x0";
+        let tokens = tokenize(exp).unwrap();
+        assert_eq!(
+            tokens,
+            vec![
+                Token::Number(1),
+                Token::Operator(Op::Add),
+                Token::Number(2),
+                Token::Operator(Op::Mul),
+                Token::Register("x0".to_string()),
+            ]
+        );
 
-    let exp = "1+2 * *$pc";
-    let tokens = tokenize(exp).unwrap();
-    assert_eq!(
-        tokens,
-        vec![
-            Token::Number(1),
-            Token::Operator(Op::Add),
-            Token::Number(2),
-            Token::Operator(Op::Mul),
-            Token::Operator(Op::Star),
-            Token::Register("pc".to_string()),
-        ]
-    );
+        let exp = "1+2 * *$pc";
+        let tokens = tokenize(exp).unwrap();
+        assert_eq!(
+            tokens,
+            vec![
+                Token::Number(1),
+                Token::Operator(Op::Add),
+                Token::Number(2),
+                Token::Operator(Op::Mul),
+                Token::Operator(Op::Star),
+                Token::Register("pc".to_string()),
+            ]
+        );
 
-    let exp = "0xfff";
-    let tokens = tokenize(exp).unwrap();
-    assert_eq!(tokens, vec![Token::Number(0xfff),]);
+        let exp = "0xfff";
+        let tokens = tokenize(exp).unwrap();
+        assert_eq!(tokens, vec![Token::Number(0xfff),]);
 
-    let exp = "((*0xfffff000) + 0x1000) && ($pc == 0x1000)";
-    let tokens = tokenize(exp).unwrap();
-    assert_eq!(
-        tokens,
-        vec![
-            Token::Lparen,
-            Token::Lparen,
-            Token::Operator(Op::Star),
-            Token::Number(0xfffff000),
-            Token::Rparen,
-            Token::Operator(Op::Add),
-            Token::Number(0x1000),
-            Token::Rparen,
-            Token::Operator(Op::And),
-            Token::Lparen,
-            Token::Register("pc".to_string()),
-            Token::Operator(Op::Eq),
-            Token::Number(0x1000),
-            Token::Rparen,
-        ]
-    );
-}
+        let exp = "((*0xfffff000) + 0x1000) && ($pc == 0x1000)";
+        let tokens = tokenize(exp).unwrap();
+        assert_eq!(
+            tokens,
+            vec![
+                Token::Lparen,
+                Token::Lparen,
+                Token::Operator(Op::Star),
+                Token::Number(0xfffff000),
+                Token::Rparen,
+                Token::Operator(Op::Add),
+                Token::Number(0x1000),
+                Token::Rparen,
+                Token::Operator(Op::And),
+                Token::Lparen,
+                Token::Register("pc".to_string()),
+                Token::Operator(Op::Eq),
+                Token::Number(0x1000),
+                Token::Rparen,
+            ]
+        );
+    }
 
-#[test]
-fn test_eval() {
-    use crate::isas::reg::RegisterModel;
-    use crate::isas::riscv::cpu;
+    #[test]
+    fn test_eval() {
+        use crate::isas::reg::RegisterModel;
+        use crate::isas::riscv::cpu;
 
-    let mut cpu = cpu::RiscvCPU::default();
+        let mut cpu = cpu::RiscvCPU::default();
 
-    cpu.update_pc(0x1000);
-    let exp = "1+2 * $pc";
-    let value = eval(&mut cpu, exp).unwrap();
-    assert_eq!(value, 0x2001);
+        cpu.update_pc(0x1000);
+        let exp = "1+2 * $pc";
+        let value = eval(&mut cpu, exp).unwrap();
+        assert_eq!(value, 0x2001);
 
-    let exp = "$pc == 0x1000";
-    let value = eval(&mut cpu, exp).unwrap();
-    assert_eq!(value, 1);
+        let exp = "$pc == 0x1000";
+        let value = eval(&mut cpu, exp).unwrap();
+        assert_eq!(value, 1);
+    }
 }
