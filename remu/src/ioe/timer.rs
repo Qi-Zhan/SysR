@@ -1,4 +1,4 @@
-use super::io::IO;
+use super::IO;
 
 #[derive(Debug)]
 pub(crate) struct Timer {
@@ -13,7 +13,7 @@ impl Timer {
 
 impl Default for Timer {
     fn default() -> Self {
-        Self::new(super::io::TIMER_ADDR)
+        Self::new(super::TIMER_ADDR)
     }
 }
 

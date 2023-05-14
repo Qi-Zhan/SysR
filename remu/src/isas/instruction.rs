@@ -1,6 +1,6 @@
 use std::fmt::Display;
 use crate::error::RError;
-use super::isa::ISA;
+use super::ISA;
 
 pub trait Inst: Display + Clone + Copy + PartialEq + Eq + Sized {
     /// Assemble the instruction into a 32-bit machine code.

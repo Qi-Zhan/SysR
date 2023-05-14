@@ -1,5 +1,4 @@
-use super::exe;
-use super::elformat::{EI_MAGO, EI_MAG1, EI_MAG2, EI_MAG3};
+use super::{elformat::{EI_MAGO, EI_MAG1, EI_MAG2, EI_MAG3}, Exe};
 /// implementation of ELF file format, from https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 
 macro_rules! show_header {
@@ -230,9 +229,9 @@ macro_rules! elf_parse {
 mod elf32 {
     use linearparse_derive::LinearParse;
     use crate::util::LinearParse;
-    use super::super::exe::Exe;
+    use super::super::Exe;
     use super::super::elformat::*;
-    use crate::isas::isa::ISA;
+    use crate::isas::ISA;
     use crate::error::RError;
 
     #[derive(Debug)]
@@ -311,13 +310,6 @@ mod elf32 {
                     let mut index = self.program_headers[i].offset as usize;
                     let mut vaddr = self.program_headers[i].vaddr as usize;
                     for _ in 0..self.program_headers[i].filesz {
-                        // if self.program_headers[i].filesz == 0x0217c {
-                        //     // print 4 bytes
-                        //     if index % 4 == 0 {
-                        //         let value = (self.bytes[index] as u32) | ((self.bytes[index+1] as u32) << 8) | ((self.bytes[index+2] as u32) << 16) | ((self.bytes[index+3] as u32) << 24);
-                        //         println!("vaddr: 0x{:x}, value: 0x{:08x}", vaddr, value);
-                        //     }
-                        // }
                         cpu.store_mem(vaddr as u32, 1, self.bytes[index] as u32);
                         index += 1;
                         vaddr += 1;
@@ -336,9 +328,9 @@ mod elf64 {
 
     use linearparse_derive::LinearParse;
     use crate::util::LinearParse;
-    use super::super::exe::Exe;
+    use super::super::Exe;
     use super::super::elformat::*;
-    use crate::isas::isa::ISA;
+    use crate::isas::ISA;
     use crate::error::RError;
 
     #[derive(Debug)]
@@ -465,7 +457,7 @@ impl ELF {
     }
 }
 
-impl exe::Exe for ELF {
+impl Exe for ELF {
 
     fn parse(input: &[u8]) -> Result<Self, crate::error::RError> {
         if input.len() < 4 {
@@ -489,7 +481,7 @@ impl exe::Exe for ELF {
         }
     }
 
-    fn load_binary(&mut self, cpu:& mut impl crate::isas::isa::ISA) -> Result<(), crate::error::RError> {
+    fn load_binary(&mut self, cpu:& mut impl crate::isas::ISA) -> Result<(), crate::error::RError> {
         match self {
             ELF::ELF32(elf) => elf.load_binary(cpu),
             ELF::ELF64(elf) => elf.load_binary(cpu),
@@ -500,7 +492,7 @@ impl exe::Exe for ELF {
 
 #[cfg(test)]
 mod tests {
-    use crate::exes::exe::Exe;
+    use crate::exes::Exe;
 
     #[test]
     fn test_parse_32_header() {

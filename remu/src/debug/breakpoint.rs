@@ -1,4 +1,4 @@
-use crate::isas::isa::ISA;
+use crate::isas::ISA;
 use super::eval::eval;
 
 struct Breakpoint {

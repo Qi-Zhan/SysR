@@ -1,8 +1,8 @@
 use remu::exes::elf::ELF;
-use remu::exes::exe::Exe;
+use remu::exes::Exe;
 use remu::fatal;
 use remu::ioe::keyboard::KBEvent;
-use remu::isas::isa::ISA;
+use remu::isas::ISA;
 use remu::isas::riscv::cpu::RiscvCPU;
 use sdl2::event::Event;
 use sdl2::pixels::PixelFormatEnum;

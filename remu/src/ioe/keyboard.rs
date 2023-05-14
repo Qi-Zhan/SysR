@@ -1,4 +1,5 @@
-use super::io::{self, IO};
+use super::IO;
+use sdl2::event::Event;
 
 #[derive(Debug, PartialEq)]
 pub enum Key {
@@ -123,7 +124,7 @@ pub(crate) struct Keyboard {
 
 impl Default for Keyboard {
     fn default() -> Self {
-        Self::new(io::KBD_ADDR)
+        Self::new(super::KBD_ADDR)
     }
 }
 
@@ -165,8 +166,6 @@ impl IO for Keyboard {
 
     fn update(&mut self) {}
 }
-
-use sdl2::event::Event;
 
 fn sdlcode2u32(sdlcode: sdl2::keyboard::Keycode) -> Key {
     use sdl2::keyboard::Keycode::*;
@@ -250,25 +249,35 @@ impl From<Event> for KBEvent {
     }
 }
 
-#[test]
-fn test_kbd() {
-    let mut kbd = Keyboard::default();
-    kbd.write(io::KBD_ADDR, 0x1C);
-    assert_eq!(kbd.read(io::KBD_ADDR), Some(0x1C));
-    assert_eq!(kbd.read(io::KBD_ADDR), Some(0));
+#[cfg(test)]
+mod tests {
+    use sdl2::event::Event;
 
-    let event: Event = Event::KeyDown {
-        keycode: Some(sdl2::keyboard::Keycode::A),
-        timestamp: 0,
-        window_id: 0,
-        scancode: None,
-        keymod: sdl2::keyboard::Mod::empty(),
-        repeat: false,
-    };
-    let kbevent: KBEvent = event.into();
-    assert_eq!(kbevent, KBEvent::Press(Key::Char('a')));
-    let code: u32 = kbevent.into();
-    assert_eq!(code, 'a' as u32);
-    let kbevent: KBEvent = code.into();
-    assert_eq!(kbevent, KBEvent::Press(Key::Char('a')));
+    use crate::ioe::IO;
+    use crate::ioe::keyboard::{KBEvent, Key};
+
+    use super::super::KBD_ADDR;
+    use super::Keyboard;
+    #[test]
+    fn test_kbd() {
+        let mut kbd = Keyboard::default();
+        kbd.write(KBD_ADDR, 0x1C);
+        assert_eq!(kbd.read(KBD_ADDR), Some(0x1C));
+        assert_eq!(kbd.read(KBD_ADDR), Some(0));
+
+        let event: Event = Event::KeyDown {
+            keycode: Some(sdl2::keyboard::Keycode::A),
+            timestamp: 0,
+            window_id: 0,
+            scancode: None,
+            keymod: sdl2::keyboard::Mod::empty(),
+            repeat: false,
+        };
+        let kbevent: KBEvent = event.into();
+        assert_eq!(kbevent, KBEvent::Press(Key::Char('a')));
+        let code: u32 = kbevent.into();
+        assert_eq!(code, 'a' as u32);
+        let kbevent: KBEvent = code.into();
+        assert_eq!(kbevent, KBEvent::Press(Key::Char('a')));
+    }
 }

@@ -6,7 +6,7 @@ use super::mem;
 use super::reg;
 use crate::error::RError;
 use crate::isas::instruction::Inst;
-use crate::isas::{isa::ISA, mem::MemoryModel, reg::RegisterModel};
+use crate::isas::{ISA, MemoryModel, RegisterModel};
 
 pub struct RiscvCPU {
     regs: reg::Regs,

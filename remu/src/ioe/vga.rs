@@ -1,4 +1,4 @@
-use super::io::{IO, VGA_ADDR};
+use super::IO;
 
 // 400x300x32, every pixel is 4 bytes by red, green, blue, alpha
 pub struct Screen {
@@ -11,7 +11,7 @@ pub struct Screen {
 
 impl Default for Screen {
     fn default() -> Self {
-        Self::new(VGA_ADDR, 400, 300)
+        Self::new(super::VGA_ADDR, 400, 300)
     }
 }
 

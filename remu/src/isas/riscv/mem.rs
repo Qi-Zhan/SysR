@@ -1,14 +1,12 @@
-use crate::ioe::keyboard::Keyboard;
-use crate::isas::mem::MemoryModel;
-use crate::ioe::io;  
-use crate::ioe::{serial::SerialPort, timer::Timer, vga::Screen};
+use crate::isas::MemoryModel;
+use crate::ioe::{keyboard::Keyboard, serial::SerialPort, timer::Timer, vga::Screen, IO};
 use crate::settings::*;
 
 // #[derive(Debug)]
 pub struct Mem {
     // huge memory 
     mem: Vec<u8>,
-    pub devices: Vec<Box<dyn io::IO>>,
+    pub devices: Vec<Box<dyn IO>>,
 }
 
 impl Default for Mem {
@@ -22,7 +20,6 @@ use crate::info;
 impl Mem {
 
     pub fn new() -> Self {
-        use io::IO;
         let mem = vec![0; 0x100000000];
         let mut devices: Vec<Box<dyn IO>> = Vec::new();
         // register devices
@@ -83,4 +80,3 @@ impl MemoryModel for Mem {
         }
     }
 }
-

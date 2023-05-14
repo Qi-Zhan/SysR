@@ -4,7 +4,7 @@ use super::breakpoint::Breakpoints;
 use super::eval::eval;
 use crate::color::{ERROR, grey};
 use crate::info;
-use crate::isas::isa::ISA;
+use crate::isas::ISA;
 use crate::error::RError;
 
 #[derive(Debug, PartialEq)]

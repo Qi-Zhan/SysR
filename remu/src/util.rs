@@ -1,5 +1,3 @@
-#![allow(clippy::print_literal)]
-
 #[macro_export]
 macro_rules! function {
     () => {{

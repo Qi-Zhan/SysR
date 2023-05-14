@@ -1,4 +1,4 @@
-use crate::isas::isa::ISA;
+use crate::isas::ISA;
 
 pub(super) fn eval(cpu: &mut impl ISA, exp: &str) -> Option<u64> {
     let tokens = tokenize(exp)?;
@@ -275,7 +275,7 @@ mod tests {
 
     #[test]
     fn test_eval() {
-        use crate::isas::reg::RegisterModel;
+        use crate::isas::RegisterModel;
         use crate::isas::riscv::cpu;
 
         let mut cpu = cpu::RiscvCPU::default();

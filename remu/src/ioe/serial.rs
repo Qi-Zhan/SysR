@@ -1,4 +1,4 @@
-use super::io::IO;
+use super::IO;
 
 #[derive(Debug)]
 pub(crate) struct SerialPort {
@@ -14,7 +14,7 @@ impl SerialPort {
 
 impl Default for SerialPort {
     fn default() -> Self {
-        Self::new(super::io::SERIAL_PORT, 4)
+        Self::new(super::SERIAL_PORT, 4)
     }
 }
 

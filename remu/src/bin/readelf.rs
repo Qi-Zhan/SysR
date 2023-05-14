@@ -1,6 +1,6 @@
 use std::process::exit;
 
-use remu::exes::{elf, exe::Exe};
+use remu::exes::{elf, Exe};
 
 /// my implementation of readelf to test the elf parser
 /// it **only** supports the following options:

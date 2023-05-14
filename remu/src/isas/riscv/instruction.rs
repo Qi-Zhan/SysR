@@ -5,7 +5,7 @@ use std::{fmt::Display, num::ParseIntError};
 
 use crate::{
     error::RError,
-    isas::{instruction::Inst, isa::ISA},
+    isas::{instruction::Inst, ISA},
 };
 
 type Imm = u32;
@@ -843,7 +843,7 @@ impl Inst for Instruction {
 mod tests {
 
     use super::*;
-    use crate::isas::{reg::RegisterModel, riscv::cpu};
+    use crate::isas::{RegisterModel, riscv::cpu};
 
     #[test]
     fn test_add_sub() {

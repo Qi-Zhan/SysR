@@ -4,7 +4,7 @@ use std::{
     ops::{Index, IndexMut},
 };
 
-use crate::isas::reg::RegisterModel;
+use crate::isas::RegisterModel;
 
 const REG_NUM: usize = 32;
 const PRIVILEGE_REG_NUM: usize = 0x1000;
