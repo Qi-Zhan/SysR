@@ -3,7 +3,7 @@ use remu::exes::Exe;
 use remu::fatal;
 use remu::ioe::keyboard::KBEvent;
 use remu::isas::ISA;
-use remu::isas::riscv::cpu::RiscvCPU;
+use remu::isas::riscv::RiscvCPU;
 use sdl2::event::Event;
 use sdl2::pixels::PixelFormatEnum;
 

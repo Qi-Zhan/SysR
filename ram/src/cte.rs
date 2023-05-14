@@ -2,10 +2,10 @@
 
 use core::arch::{asm, global_asm};
 
-// global_asm!(include_str!("trap.S"));
+// global_asm!(include_str!("trap_pro.S"));
 
 /// init exception entry, 
-pub fn init(handler: fn(Event, &Context) -> Context) {
+pub fn init(handler: &fn(Event, &Context) -> Context) {
     // #[cfg(target_arch="riscv32")]
     // println!("{:p}", moo as *const ());
     unsafe {

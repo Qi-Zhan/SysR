@@ -1,10 +1,10 @@
 use crate::isas::MemoryModel;
 use crate::ioe::{keyboard::Keyboard, serial::SerialPort, timer::Timer, vga::Screen, IO};
 use crate::settings::*;
+use crate::info;
 
 // #[derive(Debug)]
 pub struct Mem {
-    // huge memory 
     mem: Vec<u8>,
     pub devices: Vec<Box<dyn IO>>,
 }
@@ -15,7 +15,6 @@ impl Default for Mem {
     }
 }
 
-use crate::info;
 
 impl Mem {
 

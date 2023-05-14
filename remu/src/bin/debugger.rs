@@ -1,5 +1,5 @@
 use remu::debug::debugger::Debugger;
-use remu::isas::riscv::cpu::RiscvCPU;
+use remu::isas::riscv::RiscvCPU;
 use remu::exes::Exe;
 use remu::exes::elf::ELF;
 

@@ -10,7 +10,7 @@
 // rv64sv   RV64 supervisor-level,  integer and vector
 
 
-use remu::{isas::{riscv::cpu::RiscvCPU, ISA, RegisterModel}, exes::{elf::ELF, Exe}, error::RError};
+use remu::{isas::{riscv::RiscvCPU, ISA, RegisterModel}, exes::{elf::ELF, Exe}, error::RError};
 
 const RISCV_TEST_DIR: &str = "/Users/zhanqi/project/riscv-tests/isa";
 

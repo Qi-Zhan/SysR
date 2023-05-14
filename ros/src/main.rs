@@ -12,25 +12,26 @@ mod syscall;
 mod filesystem;
 
 pub fn on_interrupt(event: Event, context: &Context) -> Context {
+    puts("on_interrupt\n");
     match event {
         Event::Yield => {
             puts("yield\n");
-            context.clone()
+            *context.clone()
         },
         Event::Error => {
             puts("error\n");
-            context.clone()
+            *context.clone()
         },
         Event::Syscall => {
             puts("syscall\n");
+            *context.clone()
             // syscall::do_syscall(context)
         },
         _ => {
             puts("unknown\n");
-            context.clone()
+            *context.clone()
         },
     }
-    puts("on_interrupt\n");
 }
 
 #[no_mangle]

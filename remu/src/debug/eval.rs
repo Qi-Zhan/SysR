@@ -276,9 +276,9 @@ mod tests {
     #[test]
     fn test_eval() {
         use crate::isas::RegisterModel;
-        use crate::isas::riscv::cpu;
+        use crate::isas::riscv::RiscvCPU;
 
-        let mut cpu = cpu::RiscvCPU::default();
+        let mut cpu = RiscvCPU::default();
 
         cpu.update_pc(0x1000);
         let exp = "1+2 * $pc";
