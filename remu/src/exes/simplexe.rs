@@ -1,6 +1,6 @@
 use crate::{
     error::RError,
-    isas::{riscv::instruction::Instruction, Inst},
+    isas::{riscv::instruction::Instruction, Inst, ISA},
     util::parse_str,
 };
 
@@ -11,27 +11,55 @@ use super::Exe;
 /// and we can ignore some official rule to simpilify
 #[derive(Debug)]
 pub struct SimpleExe {
-    
+    /// entry address
+    entry: u32,
+    /// instructions
+    pub asm: Vec<String>,
+}
+
+impl Default for SimpleExe {
+    fn default() -> Self {
+        SimpleExe {
+            entry: 0x80000000,
+            asm: Vec::new(),
+        }
+    }
 }
 
 impl Exe for SimpleExe {
     /// currently only support riscv32
     fn parse(input: &[u8]) -> Result<Self, RError> {
-        let mut buf: Vec<u8> = vec![];
-        input.clone_into(&mut buf);
-        todo!();
+        let input = std::str::from_utf8(input)
+            .map_err(|_| RError::IOError("input is not utf8".to_string()))?;
+        let lines = input
+            .split('\n')
+            .filter(|s| !s.is_empty())
+            // delete # comment
+            .map(|s| {
+                if let Some(pos) = s.find('#') {
+                    s[..pos].to_string()
+                } else {
+                    s.to_string()
+                }
+            })
+            .map(|s| s.trim().to_string())
+            .collect::<Vec<_>>();
+        Ok(SimpleExe {
+            entry: 0x80000000,
+            asm: lines,
+        })
     }
 
     fn load_binary(&mut self, cpu: &mut impl crate::isas::ISA) -> Result<(), RError> {
         assert_eq!(cpu.name(), "RISC-V 32");
         // choose entry address
-
+        cpu.update_pc(self.entry);
         todo!()
     }
 }
 
 impl SimpleExe {
-    fn parse_assembly(&self, assembly: &str, cpu: &impl crate::isas::ISA) -> Result<u32, RError> {
+    fn parse_assembly(&self, assembly: &str, cpu: &impl ISA) -> Result<u32, RError> {
         let assembly = assembly.replace([',', '(', ')'], " ");
 
         let tokens = assembly.split_whitespace().collect::<Vec<_>>();
@@ -227,10 +255,18 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_simple_exe() {
+        let path = "tests/sample.S";
+        let _cpu = RiscvCPU::default();
+        let exe = SimpleExe::parse_path(path).unwrap();
+        println!("{:?}", exe.asm);
+    }
+
+    #[test]
     fn test_parse_assembly() {
         let cpu = RiscvCPU::default();
         let add = Instruction::RType(0, (1, 2), 0b000, 3, 0b0110011);
-        let exe = SimpleExe {};
+        let exe = SimpleExe::default();
         assert_eq!(
             exe.parse_assembly("add x3, x1, x2", &cpu).unwrap(),
             add.assemble()
