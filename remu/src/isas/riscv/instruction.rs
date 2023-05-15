@@ -1,7 +1,6 @@
 #![allow(clippy::enum_variant_names)]
 
 use super::reg::Regs;
-use std::{fmt::Display, num::ParseIntError};
 
 use crate::{
     error::RError,
@@ -101,7 +100,7 @@ fn get(code: u32, high: u32, low: u32) -> u32 {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum Instruction {
+pub enum Instruction {
     /*
      * R-type instruction
      *
@@ -156,7 +155,7 @@ pub(super) enum Instruction {
     Nop,
 }
 
-impl Display for Instruction {
+impl std::fmt::Display for Instruction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Instruction::RType(funct7, (rs1, rs2), funct3, rd, _) => {
@@ -330,13 +329,7 @@ impl Display for Instruction {
     }
 }
 
-fn parse_str(s: &str) -> Result<u32, ParseIntError> {
-    if let Some(new) = s.strip_prefix("0x") {
-        u32::from_str_radix(new, 16)
-    } else {
-        s.parse::<u32>()
-    }
-}
+
 
 impl Inst for Instruction {
     fn assemble(&self) -> u32 {
@@ -380,197 +373,10 @@ impl Inst for Instruction {
         }
     }
 
-    /// TODO: a lot
-    fn parse_assembly(assembly: &str, cpu: &impl ISA) -> Result<Self, RError> {
-        let assembly = assembly.replace([',', '(', ')'], " ");
-
-        let tokens = assembly.split_whitespace().collect::<Vec<_>>();
-        return match tokens.len() {
-            1 => {
-                if tokens[0].to_lowercase() == "ecall" {
-                    return Ok(Instruction::CSRType(0, (0, 0), 0, 0, 0b1110011));
-                }
-                if tokens[0].to_lowercase() == "ebreak" {
-                    return Ok(Instruction::CSRType(0, (0, 0), 0, 0, 0b1110011));
-                }
-                Err(RError::InvalidAssembly(assembly))
-            }
-            3 => {
-                let rd = cpu
-                    .name_to_index(tokens[1])
-                    .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                match parse_str(tokens[2]) {
-                    Ok(imm) => {
-                        if tokens[0].to_lowercase().starts_with("lui") {
-                            Ok(Instruction::UType(imm << 12, rd, 0b0110111))
-                        } else if tokens[0].to_lowercase().starts_with("auipc") {
-                            Ok(Instruction::UType(imm, rd, 0b0010111))
-                        } else if tokens[0].to_lowercase().starts_with("jal") {
-                            Ok(Instruction::JType(imm, rd, 0b1101111))
-                        } else {
-                            Err(RError::InvalidAssembly(assembly))
-                        }
-                    }
-                    _ => Err(RError::InvalidAssembly(assembly.clone())),
-                }
-            }
-            4 => {
-                return match tokens[0].to_lowercase().as_str() {
-                    "beq" | "bne" | "blt" | "bge" | "bltu" | "bgeu" => {
-                        let rs1 = cpu
-                            .name_to_index(tokens[1])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let rs2 = cpu
-                            .name_to_index(tokens[2])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let imm = parse_str(tokens[3])
-                            .map_err(|_| RError::InvalidAssembly(assembly.clone()))?;
-                        let funct3 = match tokens[0].to_lowercase().as_str() {
-                            "beq" => 0b000,
-                            "bne" => 0b001,
-                            "blt" => 0b100,
-                            "bge" => 0b101,
-                            "bltu" => 0b110,
-                            "bgeu" => 0b111,
-                            _ => Err(RError::InvalidAssembly(assembly.clone()))?,
-                        };
-                        Ok(Instruction::BType(imm, (rs1, rs2), funct3, 0b1100011))
-                    }
-                    "lb" | "lh" | "lw" | "lbu" | "lhu" => {
-                        let rd = cpu
-                            .name_to_index(tokens[1])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let imm = parse_str(tokens[2])
-                            .map_err(|_| RError::InvalidAssembly(assembly.clone()))?;
-                        let rs1 = cpu
-                            .name_to_index(tokens[3])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let funct3 = match tokens[0].to_lowercase().as_str() {
-                            "lb" => 0b000,
-                            "lh" => 0b001,
-                            "lw" => 0b010,
-                            "lbu" => 0b100,
-                            "lhu" => 0b101,
-                            _ => Err(RError::InvalidAssembly(assembly.clone()))?,
-                        };
-                        Ok(Instruction::IType(imm, (rs1, 0), funct3, rd, 0b0000011))
-                    }
-                    "sb" | "sh" | "sw" => {
-                        let imm = parse_str(tokens[2])
-                            .map_err(|_| RError::InvalidAssembly(assembly.clone()))?;
-                        let rs1 = cpu
-                            .name_to_index(tokens[3])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let rs2 = cpu
-                            .name_to_index(tokens[1])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let funct3 = match tokens[0].to_lowercase().as_str() {
-                            "sb" => 0b000,
-                            "sh" => 0b001,
-                            "sw" => 0b010,
-                            _ => Err(RError::InvalidAssembly(assembly.clone()))?,
-                        };
-                        Ok(Instruction::SType(imm, (rs1, rs2), funct3, 0b0100011))
-                    }
-                    "addi" | "slti" | "sltiu" | "xori" | "ori" | "andi" | "slli" | "srli"
-                    | "srai" => {
-                        let rd = cpu
-                            .name_to_index(tokens[1])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let rs1 = cpu
-                            .name_to_index(tokens[2])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let imm = parse_str(tokens[3])
-                            .map_err(|_| RError::InvalidAssembly(assembly.clone()))?;
-                        let funct3 = match tokens[0].to_lowercase().as_str() {
-                            "addi" => 0b000,
-                            "slti" => 0b010,
-                            "sltiu" => 0b011,
-                            "xori" => 0b100,
-                            "ori" => 0b110,
-                            "andi" => 0b111,
-                            "slli" => 0b001,
-                            "srli" => 0b101,
-                            "srai" => 0b101,
-                            _ => Err(RError::InvalidAssembly(assembly.clone()))?,
-                        };
-                        Ok(Instruction::IType(imm, (rs1, 0), funct3, rd, 0b0010011))
-                    }
-                    "add" | "sub" | "sll" | "slt" | "sltu" | "xor" | "srl" | "sra" | "or"
-                    | "and" => {
-                        let rd = cpu
-                            .name_to_index(tokens[1])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let rs1 = cpu
-                            .name_to_index(tokens[2])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let rs2 = cpu
-                            .name_to_index(tokens[3])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let funct3 = match tokens[0].to_lowercase().as_str() {
-                            "add" => 0b000,
-                            "sll" => 0b001,
-                            "slt" => 0b010,
-                            "sltu" => 0b011,
-                            "xor" => 0b100,
-                            "srl" => 0b101,
-                            "or" => 0b110,
-                            "and" => 0b111,
-                            _ => Err(RError::InvalidAssembly(assembly.clone()))?,
-                        };
-                        let funct7 = match tokens[0].to_lowercase().as_str() {
-                            "add" => 0b0000000,
-                            "sub" => 0b0100000,
-                            "sll" => 0b0000000,
-                            "srl" => 0b0000000,
-                            "sra" => 0b0100000,
-                            _ => 0b0000000,
-                        };
-                        Ok(Instruction::RType(
-                            funct7,
-                            (rs1, rs2),
-                            funct3,
-                            rd,
-                            0b0110011,
-                        ))
-                    }
-                    "csrrw" | "csrrs" | "csrrc" | "csrrwi" | "csrrsi" | "csrrci" => {
-                        let rd = cpu
-                            .name_to_index(tokens[1])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let csr = cpu
-                            .name_to_index(tokens[2])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let imm = parse_str(tokens[3])
-                            .map_err(|_| RError::InvalidAssembly(assembly.clone()))?;
-                        let funct3 = match tokens[0].to_lowercase().as_str() {
-                            "csrrw" => 0b001,
-                            "csrrs" => 0b010,
-                            "csrrc" => 0b011,
-                            "csrrwi" => 0b101,
-                            "csrrsi" => 0b110,
-                            "csrrci" => 0b111,
-                            _ => Err(RError::InvalidAssembly(assembly.clone()))?,
-                        };
-                        Ok(Instruction::IType(imm, (csr, 0), funct3, rd, 0b1110011))
-                    }
-                    "jalr" => {
-                        let rd = cpu
-                            .name_to_index(tokens[1])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let rs1 = cpu
-                            .name_to_index(tokens[3])
-                            .ok_or(RError::InvalidAssembly(assembly.clone()))?;
-                        let imm = parse_str(tokens[2])
-                            .map_err(|_| RError::InvalidAssembly(assembly.clone()))?;
-                        Ok(Instruction::IType(imm, (rs1, 0), 0b000, rd, 0b1100111))
-                    }
-                    _ => Err(RError::InvalidAssembly(assembly.clone())),
-                }
-            }
-            _ => Err(RError::InvalidAssembly(assembly)),
-        };
+    fn disassemble(&self) -> String {
+        self.to_string()
     }
+
 
     fn execute(&self, cpu: &mut impl ISA) -> Result<u32, RError> {
         match self {
@@ -982,52 +788,7 @@ mod tests {
         assert_eq!(cpu[12], 0xf8765432);
     }
 
-    #[test]
-    fn test_parse_assembly() {
-        let cpu = RiscvCPU::default();
-        let add = Instruction::RType(0, (1, 2), 0b000, 3, 0b0110011);
-        assert_eq!(
-            Instruction::parse_assembly("add x3, x1, x2", &cpu).unwrap(),
-            add
-        );
-        let addi = Instruction::IType(10, (1, 0), 0b000, 2, 0b0010011);
-        assert_eq!(
-            Instruction::parse_assembly("addi x2, x1, 10", &cpu).unwrap(),
-            addi
-        );
-        assert_eq!(addi.to_string(), "addi sp, ra, 0xa");
-        let lui = Instruction::UType(0x12345000, 1, 0b0110111);
-        assert_eq!(
-            Instruction::parse_assembly("lui x1, 0x12345", &cpu).unwrap(),
-            lui
-        );
-        assert_eq!(lui.to_string(), "lui ra, 0x12345");
-        let auipc = Instruction::UType(0x12345, 1, 0b0010111);
-        assert_eq!(
-            Instruction::parse_assembly("auipc ra, 0x12345", &cpu).unwrap(),
-            auipc
-        );
-        let jal = Instruction::JType(0x12345, 1, 0b1101111);
-        assert_eq!(
-            Instruction::parse_assembly("jal ra, 0x12345", &cpu).unwrap(),
-            jal
-        );
-        let jalr = Instruction::IType(0x12345, (1, 0), 0b000, 2, 0b1100111);
-        assert_eq!(
-            Instruction::parse_assembly("jalr sp, 0x12345(x1)", &cpu).unwrap(),
-            jalr
-        );
-        let addi = Instruction::IType(0x123, (1, 0), 0b000, 2, 0b0010011);
-        assert_eq!(
-            Instruction::parse_assembly("addi sp, ra, 0x123", &cpu).unwrap(),
-            addi
-        );
-        let beq = Instruction::BType(0x12345, (1, 2), 0b000, 0b1100011);
-        assert_eq!(
-            Instruction::parse_assembly("beq ra, sp, 0x12345", &cpu).unwrap(),
-            beq
-        );
-    }
+
 
     #[test]
     fn test_addi() {

@@ -7,8 +7,7 @@ use std::ops::IndexMut;
 
 use instruction::Instruction;
 use crate::error::RError;
-use crate::isas::Inst;
-use crate::isas::{ISA, MemoryModel, RegisterModel};
+use crate::isas::{ISA, MemoryModel, RegisterModel, Inst};
 
 pub struct RiscvCPU {
     regs: reg::Regs,
@@ -127,10 +126,6 @@ impl ISA for RiscvCPU {
         Ok(inst.to_string())
     }
 
-    fn load_from_assembly(_strs: Vec<&str>) -> Result<Self, RError> {
-        todo!()
-    }
-
     fn execute(&mut self, inst_code: u32) -> Result<u32, RError> {
         // every time execute an instruction, mcycle and minstret should be increased
         // self.write_register_by_name("mcycle", self.read_register_by_name("mcycle").unwrap() + 1);
@@ -154,10 +149,6 @@ impl ISA for RiscvCPU {
         Ok(())
     }
 
-    fn execute_assem(&mut self, assembly: &str) -> Result<u32, RError> {
-        let inst = Instruction::parse_assembly(assembly, self)?;
-        inst.execute(self)
-    }
 }
 
 #[cfg(test)]

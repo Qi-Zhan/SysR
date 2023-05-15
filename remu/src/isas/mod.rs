@@ -15,8 +15,6 @@ pub trait ISA: MemoryModel + RegisterModel + Sized {
         }
     }
 
-    fn load_from_assembly(strs: Vec<&str>) -> Result<Self, RError>;
-
     fn step(&mut self) -> Result<(), RError> {
         let pc = self.pc();
         let inst_code = self.fetch_inst(pc)?;
@@ -41,7 +39,6 @@ pub trait ISA: MemoryModel + RegisterModel + Sized {
 
     fn execute(&mut self, inst_code: u32) -> Result<u32, RError>;
 
-    fn execute_assem(&mut self, assembly: &str) -> Result<u32, RError>;
 }
 
 pub trait MemoryModel {
@@ -81,13 +78,7 @@ pub trait Inst: Display + Clone + Copy + PartialEq + Eq + Sized {
     /// Assemble the instruction into a 32-bit machine code.
     fn assemble(&self) -> u32;
     /// Disassemble the instruction from Inst.
-    fn disassemble(&self) -> String {
-        self.to_string()
-    }
-    /// Parse the assembly into an instruction.
-    fn parse_assembly(assembly: &str, cpu: &impl ISA) -> Result<Self, RError>
-    where
-        Self: Sized;
+    fn disassemble(&self) -> String; 
     /// Execute the instruction.
     fn execute(&self, cpu: &mut impl ISA) -> Result<u32, RError>;
     /// decode the 32-bit machine code into an instruction.

@@ -1,3 +1,5 @@
+use std::num::ParseIntError;
+
 #[macro_export]
 macro_rules! function {
     () => {{
@@ -69,4 +71,12 @@ macro_rules! fatal {
 
 pub trait LinearParse {
     fn linearparse(input: &[u8]) -> Self;
+}
+
+pub fn parse_str(s: &str) -> Result<u32, ParseIntError> {
+    if let Some(new) = s.strip_prefix("0x") {
+        u32::from_str_radix(new, 16)
+    } else {
+        s.parse::<u32>()
+    }
 }
