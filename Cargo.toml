@@ -8,5 +8,10 @@ members = [
     "rapps",
 ]
 
+[workspace.package]
+authors = ["Qi Zhan <qizhan@zju.edu.cn>"]
+description = "emulating all computer system"
+repository = "https://github.com/Qi-Zhan/Just-For-Fun"
+
 [profile.release]
 debug = true

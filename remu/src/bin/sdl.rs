@@ -1,8 +1,6 @@
-use remu::exes::elf::ELF;
-use remu::exes::Exe;
+use remu::exes::{elf::ELF, Exe};
 use remu::ioe::keyboard::KBEvent;
-use remu::isas::riscv::RiscvCPU;
-use remu::isas::ISA;
+use remu::isas::{riscv::RiscvCPU, ISA};
 use remu::{fatal, info};
 use sdl2::event::Event;
 use sdl2::pixels::PixelFormatEnum;
@@ -65,7 +63,6 @@ fn main() {
             let now = std::time::Instant::now();
             if now - last >= std::time::Duration::from_millis(1000 / 15) {
                 last = now;
-                // let start = std::time::Instant::now();
                 for event in event_pump.poll_iter() {
                     match event {
                         Event::Quit { .. } => break 'running,
@@ -85,8 +82,11 @@ fn main() {
                     if device.name() == "vga" {
                         for i in 0..WIDTH * HEIGHT {
                             let value = device.read(i as u64).unwrap();
-                            pixels[i as usize * 3] = (value & 0xff) as u8; // r
-                            pixels[i as usize * 3 + 1] = ((value >> 8) & 0xff) as u8; // g
+                            // r
+                            pixels[i as usize * 3] = (value & 0xff) as u8;
+                            // g
+                            pixels[i as usize * 3 + 1] = ((value >> 8) & 0xff) as u8;
+                            // b
                             pixels[i as usize * 3 + 2] = ((value >> 16) & 0xff) as u8;
                         }
                         texture.update(None, &pixels, WIDTH as usize * 3).unwrap();
