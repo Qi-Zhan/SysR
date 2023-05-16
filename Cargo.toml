@@ -7,3 +7,6 @@ members = [
     "ram",
     "rapps",
 ]
+
+[profile.release]
+debug = true

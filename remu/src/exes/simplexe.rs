@@ -9,6 +9,11 @@ use super::Exe;
 /// Simple Exe is basicly executable file consists of assembly code
 /// which is suitable for run code compiled from our own compiler
 /// and we can ignore some official rule to simpilify
+// program      ::= ([label] [directive | instruction] [comment] newline)*
+// label        ::= symbol ':'
+// directive    ::= '.' symbol [['.' | '+' | '-'] symbol {',' ['+' | '-'] symbol}]
+// instruction  ::= symbol [operand {',' operand}]
+// operand      ::= ['+' | '-'] (symbol '(' symbol ')' | symbol)
 #[derive(Debug)]
 pub struct SimpleExe {
     /// entry address

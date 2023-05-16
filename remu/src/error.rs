@@ -1,7 +1,6 @@
 use std::fmt::Display;
 use crate::color::{bold_red, bold_green};
 
-// TODO: use anyhow to simplify error
 #[derive(Debug)]
 pub enum RError {
     CPUError(String),
@@ -41,5 +40,3 @@ impl Display for RError {
         }
     }
 }
-
-

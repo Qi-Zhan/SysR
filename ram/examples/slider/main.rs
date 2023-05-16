@@ -33,8 +33,8 @@ pub extern "C" fn _start() -> ! {
         if let Some(c) = KeyBoard::read() {
             match c {
                 KBEvent::Press(Key::Esc) => halt(0),
-                KBEvent::Press(Key::Left) => Vga::write(&picture1),
-                KBEvent::Press(Key::Right) => Vga::write(&picture2),
+                KBEvent::Press(Key::Left) => Vga::write_all(&picture1),
+                KBEvent::Press(Key::Right) => Vga::write_all(&picture2),
                 _ => {}
             }
         }

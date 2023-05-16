@@ -2,9 +2,6 @@
 
 use core::{arch::asm, fmt::Write};
 
-use crate::{println, print};
-
-
 #[derive(Debug)]
 pub enum Device {
     SerialPort,
@@ -18,7 +15,7 @@ pub enum Device {
 }
 
 pub struct SerialPort;
-pub(crate) struct Timer;
+pub struct Timer;
 pub struct KeyBoard;
 pub struct Vga;
 
@@ -31,7 +28,7 @@ impl Timer {
                 "li t0, 0xA0000048",
                 "lw {}, 0(t0)",
                 "lw t0, 0(sp)",
-                out(reg) clock_low32, 
+                out(reg) clock_low32,
             );
         }
         let mut clock_high32: u32 = 0;
@@ -41,7 +38,7 @@ impl Timer {
                 "li t0, 0xA000004C",
                 "lw {}, 0(t0)",
                 "lw t0, 0(sp)",
-                out(reg) clock_high32, 
+                out(reg) clock_high32,
             );
         }
         ((clock_high32 as u64) << 32) | (clock_low32 as u64)
@@ -53,14 +50,13 @@ impl Write for SerialPort {
         let buf = s.as_bytes();
         for c in buf {
             unsafe {
-                // write to serial port
                 (SERIAL_PORT as *mut u8).write_volatile(*c);
             }
         }
         Ok(())
     }
 }
-                
+
 impl KeyBoard {
     pub fn read() -> Option<KBEvent> {
         let mut code: u32 = 0;
@@ -81,11 +77,19 @@ impl KeyBoard {
 }
 
 impl Vga {
-    pub fn write(buffer: &[u32]) {
+    pub fn write_all(buffer: &[u32]) {
         unsafe {
             for (index, item) in buffer.iter().enumerate() {
                 // ((VGA_ADDR + (index * 4) as u64) as *mut u32).write_volatile(*item);
                 ((VGA_ADDR + (index * 4) as u64) as *mut u32).write(*item);
+            }
+        }
+    }
+
+    pub fn write(buffer: &[u32], start: usize) {
+        unsafe {
+            for (index, item) in buffer.iter().enumerate() {
+                ((VGA_ADDR + ((index + start) * 4) as u64) as *mut u32).write(*item);
             }
         }
     }
@@ -126,7 +130,6 @@ pub const DISK_ADDR: u64 = DEVICE_BASE + 0x0000300;
 pub const VGA_ADDR: u64 = MMIO_BASE + 0x1000000;
 pub const AUDIO_SBUF_ADDR: u64 = MMIO_BASE + 0x1200000;
 pub const TIMER_ADDR: u64 = MMIO_BASE + 0x48;
-
 
 #[derive(Debug, PartialEq)]
 pub enum Key {
