@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 use core::{arch::asm, fmt::Write};
 // ----------------------- TM: Turing Machine -----------------------
 pub fn putch(c: char) {

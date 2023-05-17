@@ -95,30 +95,6 @@ impl Vga {
     }
 }
 
-pub struct Color {
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
-}
-
-impl From<Color> for u32 {
-    fn from(color: Color) -> Self {
-        let r = color.r as u32;
-        let g = color.g as u32;
-        let b = color.b as u32;
-        r | (g << 8) | (b << 16)
-    }
-}
-
-impl From<u32> for Color {
-    fn from(color: u32) -> Self {
-        let b = (color >> 16) as u8;
-        let g = ((color >> 8) & 0xff) as u8;
-        let r = (color & 0xff) as u8;
-        Color { r, g, b }
-    }
-}
-
 pub const DEVICE_BASE: u64 = 0xa0000000;
 pub const MMIO_BASE: u64 = 0xa0000000;
 pub const SERIAL_PORT: u64 = DEVICE_BASE + 0x00003f8;

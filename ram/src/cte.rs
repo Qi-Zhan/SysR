@@ -1,5 +1,6 @@
 // ---------- CTE: Interrupt Handling and Context Switching ----------
-
+#![allow(unused_imports)]
+#![allow(dead_code)]
 use core::arch::{asm, global_asm};
 
 // global_asm!(include_str!("trap_pro.S"));

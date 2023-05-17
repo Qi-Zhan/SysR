@@ -2,8 +2,6 @@
 
 use core::fmt::Write;
 
-
-
 pub fn rand() -> u32 {
     static mut SEED: u32 = 0xdeadbeef;
     unsafe {
@@ -12,6 +10,7 @@ pub fn rand() -> u32 {
     }
 }
 
+/// return [min, max)
 pub fn rand_range(min: u32, max: u32) -> u32 {
     rand() % (max - min) + min
 }

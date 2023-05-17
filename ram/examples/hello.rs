@@ -1,8 +1,10 @@
 #![no_std]
 #![no_main]
 
+use ram::io::*;
 use ram::klib::{puts, get_time};
 use ram::*;
+use ram::tm::halt;
 
 #[no_mangle]
 pub extern "C" fn _start(_argc: isize, _argv: *const *const u8) -> ! {
@@ -12,7 +14,10 @@ pub extern "C" fn _start(_argc: isize, _argv: *const *const u8) -> ! {
     loop {
         let new = get_time();
         if let Some(event) = io::KeyBoard::read() {
-            println!("key event {:?}", event)
+            println!("key event {:?}", event);
+            if let KBEvent::Press(Key::Esc) =  event {
+                halt(0);
+            }
         }
         if (new - last) > 1000 {
             println!("count {}", i);

@@ -1,7 +1,7 @@
 use remu::exes::{elf::ELF, Exe};
 use remu::ioe::keyboard::KBEvent;
 use remu::isas::{riscv::RiscvCPU, ISA};
-use remu::{fatal, info};
+use remu::{fatal, info, warn};
 use sdl2::event::Event;
 use sdl2::pixels::PixelFormatEnum;
 
@@ -50,12 +50,17 @@ fn main() {
         match cpu.step() {
             Ok(_) => {}
             Err(remu::error::RError::Ebreak(code)) => {
-                println!("Ebreak: {}", code);
-                break;
+                if code == 0 {
+                    info!("Program exited normally");
+                    break 'running;
+                } else {
+                    warn!("Program exited with code {}", code);
+                    break 'running;
+                }
             }
             Err(e) => {
                 println!("Error: {:?}", e);
-                break;
+                break 'running;
             }
         }
         step += 1;
