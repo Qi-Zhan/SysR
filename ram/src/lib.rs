@@ -1,20 +1,18 @@
 #![no_std]
 #![no_main]
 
+pub mod cte;
 pub mod io;
 pub mod klib;
+pub mod mpe;
 pub mod tm;
 pub mod vme;
-pub mod mpe;
-pub mod cte;
-
 
 #[macro_export]
 macro_rules! println {
     () => (print!("\n"));
     ($($arg:tt)*) => (print!("{}\n", format_args!($($arg)*)));
 }
-
 
 #[macro_export]
 macro_rules! print {
@@ -29,4 +27,3 @@ macro_rules! print {
         }
     };
 }
-

@@ -1,4 +1,5 @@
 #![allow(unused_imports)]
+#![allow(unused_variables)]
 use core::{arch::asm, fmt::Write};
 // ----------------------- TM: Turing Machine -----------------------
 pub fn putch(c: char) {
@@ -7,12 +8,12 @@ pub fn putch(c: char) {
 }
 
 pub fn halt(code: i8) {
-    #[cfg(target_arch="riscv32")]
+    #[cfg(target_arch = "riscv32")]
     unsafe {
         asm!(
             "mv a0, {x0}",
             "ebreak",
-            x0 = in(reg) code, 
+            x0 = in(reg) code,
         );
     }
     // TODO: implement for other architectures

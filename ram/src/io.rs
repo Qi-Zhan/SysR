@@ -1,6 +1,7 @@
+#![allow(unused_assignments)]
 // -------------------- IOE: Input/Output Devices --------------------
 
-use core::{arch::asm, fmt::Write};
+use core::fmt::Write;
 
 #[derive(Debug)]
 pub enum Device {
@@ -21,27 +22,11 @@ pub struct Vga;
 
 impl Timer {
     pub fn read() -> u64 {
-        let mut clock_low32: u32 = 0;
         unsafe {
-            asm!(
-                "sw t0, 0(sp)",
-                "li t0, 0xA0000048",
-                "lw {}, 0(t0)",
-                "lw t0, 0(sp)",
-                out(reg) clock_low32,
-            );
+            let clock_low32 = (TIMER_ADDR as *mut u32).read_volatile();
+            let clock_high32 = ((TIMER_ADDR + 4) as *mut u32).read_volatile();
+            ((clock_high32 as u64) << 32) | (clock_low32 as u64)
         }
-        let mut clock_high32: u32 = 0;
-        unsafe {
-            asm!(
-                "sw t0, 0(sp)",
-                "li t0, 0xA000004C",
-                "lw {}, 0(t0)",
-                "lw t0, 0(sp)",
-                out(reg) clock_high32,
-            );
-        }
-        ((clock_high32 as u64) << 32) | (clock_low32 as u64)
     }
 }
 
@@ -61,13 +46,7 @@ impl KeyBoard {
     pub fn read() -> Option<KBEvent> {
         let mut code: u32 = 0;
         unsafe {
-            asm!(
-                "sw t0, 0(sp)",
-                "li t0, 0xa0000060",
-                "lw {}, 0(t0)",
-                "lw t0, 0(sp)",
-                out(reg) code,
-            );
+            code = (KBD_ADDR as *mut u32).read_volatile();
         }
         match code {
             0 => None,
