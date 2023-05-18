@@ -6,6 +6,7 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
+colored = "2.0.0"
 lazy_static = "1.4.0"
 linearparse-derive = { path = "./linearparse-derive" }
 sdl2 = "0.35.2"

@@ -1,7 +1,7 @@
-use crate::isas::MemoryModel;
-use crate::ioe::{keyboard::Keyboard, serial::SerialPort, timer::Timer, vga::Screen, IO};
-use crate::settings::*;
 use crate::info;
+use crate::ioe::{keyboard::Keyboard, serial::SerialPort, timer::Timer, vga::Screen, IO};
+use crate::isas::MemoryModel;
+use crate::{add_device, settings::*};
 
 // #[derive(Debug)]
 pub struct Mem {
@@ -15,34 +15,17 @@ impl Default for Mem {
     }
 }
 
-
 impl Mem {
-
     pub fn new() -> Self {
         let mem = vec![0; 0x100000000];
         let mut devices: Vec<Box<dyn IO>> = Vec::new();
         // register devices
-        if ENABLE_SERIAL {
-            devices.push(Box::<SerialPort>::default());
-            info!("serial port enabled")
-        }
-        if ENABLE_KBD {
-            devices.push(Box::<Keyboard>::default());
-            info!("keyboard enabled")
-        }
-        if ENABLE_VGA {
-            devices.push(Box::<Screen>::default());
-            info!("vga enabled")
-        }
-        if ENABLE_TIMER {
-            devices.push(Box::<Timer>::default());
-            info!("timer enabled")
-        }
+        add_device!(ENABLE_SERIAL, SerialPort, devices);
+        add_device!(ENABLE_KBD, Keyboard, devices);
+        add_device!(ENABLE_VGA, Screen, devices);
+        add_device!(ENABLE_TIMER, Timer, devices);
 
-        Mem { 
-            mem,
-            devices,
-        }
+        Mem { mem, devices }
     }
 
     pub fn update_devices(&mut self) {
@@ -50,7 +33,6 @@ impl Mem {
             device.update();
         }
     }
-
 }
 
 impl MemoryModel for Mem {
@@ -61,7 +43,8 @@ impl MemoryModel for Mem {
             }
         }
         let mut value: u32 = 0;
-        for i in 0..bytes as usize { // little endian
+        for i in 0..bytes as usize {
+            // little endian
             value += (self.mem[index as usize + i] as u32) << (i * 8);
         }
         Some(value)
