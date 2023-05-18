@@ -10,7 +10,7 @@
 // rv64sv   RV64 supervisor-level,  integer and vector
 
 
-use remu::{isas::{riscv::RiscvCPU, ISA, RegisterModel}, exes::{elf::ELF, Exe}, error::RError};
+use remu::{isas::{riscv::RV32CPU, ISA, RegisterModel}, exes::{elf::ELF, Exe}, error::RError};
 
 const RISCV_TEST_DIR: &str = "/Users/zhanqi/project/riscv-tests/isa";
 
@@ -75,7 +75,7 @@ fn test_one(file: &str) {
     return;
     
     let path = format!("{}/{}", RISCV_TEST_DIR, file);
-    let mut cpu = RiscvCPU::default();
+    let mut cpu = RV32CPU::default();
     let mut exe = ELF::parse_path(path.as_str()).unwrap();
     let pass = exe.find_symbol("pass");
     let fail = exe.find_symbol("fail");

@@ -15,13 +15,15 @@ macro_rules! function {
 #[macro_export]
 macro_rules! info {
     ($($arg:tt)*) => ({
+        use colored::Colorize;
         // 📕: error message
         // 📙: warning message
         // 📗: ok status message
         // 📘: action message
         // 📓: debug status message
         // 📔: Or anything you like and want to recognize immediately by color
-        print!("{}", $crate::color::bold(&$crate::color::blue("[INFO]: ")));
+        print!("{}", "[INFO]: ".blue().bold());
+        // print!("{}", $crate::color::bold(&$crate::color::blue("[INFO]: ")));
         print!("{:<40} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);
@@ -31,7 +33,8 @@ macro_rules! info {
 #[macro_export]
 macro_rules! warn {
     ($($arg:tt)*) => ({
-        print!("{}", $crate::color::bold(&$crate::color::yellow("[WARN]: ")));
+        use colored::Colorize;
+        print!("{}, ", "[WARN]: ".yellow().bold());
         print!("{} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);
@@ -41,7 +44,8 @@ macro_rules! warn {
 #[macro_export]
 macro_rules! error {
     ($($arg:tt)*) => ({
-        print!("{}", $crate::color::bold(&$crate::color::red("[ERROR]: ")));
+        use colored::Colorize;
+        print!("{}", "[ERROR]: ".red().bold());
         print!("{} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);
@@ -51,7 +55,8 @@ macro_rules! error {
 #[macro_export]
 macro_rules! debug {
     ($($arg:tt)*) => ({
-        print!("{}", $crate::color::bold(&$crate::color::green("[DEBUG]: ")));
+        use colored::Colorize;
+        print!("[DEBUG]: ");
         print!("{} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);
@@ -61,7 +66,8 @@ macro_rules! debug {
 #[macro_export]
 macro_rules! fatal {
     ($($arg:tt)*) => ({
-        print!("{}", $crate::color::bold(&$crate::color::red("[FATAL]: ")));
+        use colored::Colorize;
+        print!("{}", "[FATAL]: ".red().bold());
         print!("{} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);

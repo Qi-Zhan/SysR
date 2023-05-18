@@ -1,5 +1,6 @@
 use std::fmt::Display;
-use crate::color::{bold_red, bold_green};
+
+use colored::Colorize;
 
 #[derive(Debug)]
 pub enum RError {
@@ -20,23 +21,23 @@ pub enum RError {
 impl Display for RError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            RError::CPUError(s) => write!(f, "{}: {}",bold_red("CPUError") , s),
-            RError::DebuggerError(s) => write!(f, "{}: {}", bold_red("DebuggerError"), s),
-            RError::InvalidInstruction(s) => write!(f, "{}: {}", bold_red("InvalidInstruction"), s),
-            RError::InvalidCode(code) => write!(f, "{}: {:b}", bold_red("InvalidCode"), code),
-            RError::InvalidRegister(reg) => write!(f, "{}: {}", bold_red("InvalidRegister"), reg),
-            RError::InvalidMem(s) => write!(f, "{}: {:#x}", bold_red("InvalidMem"), s),
-            RError::AddressMisaligned(s) => write!(f, "{}: {:#x}", bold_red("AddressMisaligned"), s),
-            RError::InvalidAssembly(s) => write!(f, "{}: {}", bold_red("InvalidAssembly"), s),
+            RError::CPUError(s) => write!(f, "{}: {}",("CPUError").bold().red() , s),
+            RError::DebuggerError(s) => write!(f, "{}: {}", ("DebuggerError").bold().red(), s),
+            RError::InvalidInstruction(s) => write!(f, "{}: {}", ("InvalidInstruction").bold().red(), s),
+            RError::InvalidCode(code) => write!(f, "{}: {:b}", ("InvalidCode").bold().red(), code),
+            RError::InvalidRegister(reg) => write!(f, "{}: {}", ("InvalidRegister").bold().red(), reg),
+            RError::InvalidMem(s) => write!(f, "{}: {:#x}", ("InvalidMem").bold().red(), s),
+            RError::AddressMisaligned(s) => write!(f, "{}: {:#x}", ("AddressMisaligned").bold().red(), s),
+            RError::InvalidAssembly(s) => write!(f, "{}: {}", ("InvalidAssembly").bold().red(), s),
             RError::Ebreak(return_code) => {
                 match *return_code {
-                    0 => write!(f, "{}", bold_green("program exited normally")),
-                    _ => write!(f, "{} with code {}", bold_red("program exited") , return_code),
+                    0 => write!(f, "{}", ("program exited").bold().green()),
+                    _ => write!(f, "{} with code {}", ("program exited").bold().red() , return_code),
                 }
             }
-            RError::Ecall => write!(f, "{}", bold_red("Ecall")),
-            RError::IOError(s) => write!(f, "{}: {}", bold_red("IOError"), s),
-            RError::Other(s) => write!(f, "{}: {}", bold_red("Error"), s),
+            RError::Ecall => write!(f, "{}", ("Ecall").bold().red()),
+            RError::IOError(s) => write!(f, "{}: {}", ("IOError").bold().red(), s),
+            RError::Other(s) => write!(f, "{}: {}", ("Other").bold().red(), s),
         }
     }
 }

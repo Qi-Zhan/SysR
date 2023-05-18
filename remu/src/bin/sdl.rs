@@ -1,6 +1,6 @@
 use remu::exes::{elf::ELF, Exe};
 use remu::ioe::keyboard::KBEvent;
-use remu::isas::{riscv::RiscvCPU, ISA};
+use remu::isas::{riscv::RV32CPU, ISA};
 use remu::{fatal, info, warn};
 use sdl2::event::Event;
 use sdl2::pixels::PixelFormatEnum;
@@ -12,7 +12,7 @@ fn main() {
     let args = std::env::args().collect::<Vec<String>>();
 
     // init cpu and load binary
-    let mut cpu = RiscvCPU::default();
+    let mut cpu = RV32CPU::default();
     let mut exe = {
         if args.len() >= 2 {
             ELF::parse_path(&args[1]).unwrap()

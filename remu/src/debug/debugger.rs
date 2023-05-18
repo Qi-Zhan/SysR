@@ -1,8 +1,9 @@
 use std::io::Write;
 
+use colored::Colorize;
+
 use super::breakpoint::Breakpoints;
 use super::eval::eval;
-use crate::color::{ERROR, grey};
 use crate::info;
 use crate::isas::ISA;
 use crate::error::RError;
@@ -149,7 +150,7 @@ impl Debugger {
         match self.bps.make_breakpoint(cpu, &exp) {
             Some(bp) => println!("Breakpoint {} at {}", bp, exp),
             None => {
-                print!("{}", ERROR);
+                print!("{}", "Error".red());
                 println!(": Invalid expression");
             }
         }
@@ -222,7 +223,7 @@ impl Debugger {
     pub fn debug(&mut self, cpu: &mut impl ISA) {
         loop {
             let mut input = String::new();
-            print!("{} ", grey("(rdb)"));
+            print!("{} ", "(rdb)".truecolor(169, 169, 169).bold());
             std::io::stdout().flush().unwrap();
             std::io::stdin()
                 .read_line(&mut input)
@@ -279,7 +280,7 @@ impl Debugger {
                         self.bps.show();
                     }
                     _ => {
-                        print!("{}", ERROR);
+                        print!("{}", "Error".red());
                         println!(": '{}' is not a valid layout argument", layout);
                     }
                 },
@@ -299,7 +300,7 @@ impl Debugger {
                     println!("  clear, cls\t\tClear the screen");
                 }
                 None => {
-                    print!("{}", ERROR);
+                    print!("{}", "Error".red());
                     println!(": '{}' is not a valid command", input);
                 }
             }

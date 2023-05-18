@@ -649,11 +649,11 @@ impl Inst for Instruction {
 mod tests {
 
     use super::*;
-    use super::super::RiscvCPU;
+    use super::super::RV32CPU;
     use crate::isas::RegisterModel;
     #[test]
     fn test_add_sub() {
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
         cpu[1] = 2;
         cpu[2] = 1;
         let add = Instruction::RType(0, (1, 2), 0, 3, 0b0110011); // add x3, x1, x2
@@ -678,7 +678,7 @@ mod tests {
 
     #[test]
     fn test_and_or() {
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
         // x17 = 0x55551111 and x18 = 0xff00ff00 then the instruction and
         // will set x12 to the value 0x55001100.
         cpu[17] = 0x55551111;
@@ -699,7 +699,7 @@ mod tests {
 
     #[test]
     fn test_sll() {
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
 
         // x17 = 12345678 and x18 = 0x08 sll
         // set x12 0x34567800
@@ -712,7 +712,7 @@ mod tests {
 
     #[test]
     fn test_xori() {
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
 
         // x17 = 0x55551111 ， then xori x12,x17,0x800 will set x12 0xaaaae911.
         cpu[17] = 0x55551111;
@@ -735,7 +735,7 @@ mod tests {
 
     #[test]
     fn test_sltu_slt() {
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
 
         // if x17 = 0x12345678 and x18 = 0x0000ffff then the instruction sltu x12,x17,x18 will set x12 to the value 0x00000000.
         //If x17 = 0x12345678 and x18 = 0x8000ffff then the instruction sltu x12,x17,x18 will set x12 to the value 0x00000001.
@@ -771,7 +771,7 @@ mod tests {
 
     #[test]
     fn test_srli_srai() {
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
 
         // if x17 = 0x87654321 then the instruction srli x12,x17,4 will set x12 to the value 0x08765432.
         cpu[17] = 0x87654321;
@@ -798,7 +798,7 @@ mod tests {
         let c = Instruction::decode(code).unwrap();
         assert_eq!(c.assemble(), code);
         let code = 0xfff08093; // csrrs a0, mstatus, a0
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
         cpu.write_register_by_name("ra", 0x80000000);
         cpu.execute(code).unwrap();
         assert_eq!(cpu.read_register_by_name("ra").unwrap(), 0x7fffffff);
@@ -808,7 +808,7 @@ mod tests {
     fn test_bne() {
         let code: u32 = 0xfe5214e3; // bne tp,t0,80000370
         let _c = Instruction::decode(code).unwrap();
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
         cpu.update_pc(0x80000388);
         let new_pc = cpu.execute(code).unwrap();
         assert_eq!(new_pc, 0x8000038c);
@@ -825,7 +825,7 @@ mod tests {
                                     // 0011_0000_0011_01010_010_00000_1110011
         let c = Instruction::decode(code).unwrap();
         assert_eq!(c.assemble(), code);
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
         cpu.write_register_by_name("ra", 0x80000000);
         cpu.execute(code).unwrap();
         assert_eq!(cpu.read_register_by_name("ra").unwrap(), 0x80000000);

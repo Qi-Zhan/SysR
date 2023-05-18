@@ -9,7 +9,7 @@ use instruction::Instruction;
 use crate::error::RError;
 use crate::isas::{ISA, MemoryModel, RegisterModel, Inst};
 
-pub struct RiscvCPU {
+pub struct RV32CPU {
     regs: reg::Regs,
     pub mems: mem::Mem,
     pub mode: PrivilegeMode,
@@ -23,9 +23,9 @@ pub enum PrivilegeMode {
     Machine = 3,
 }
 
-impl Default for RiscvCPU {
+impl Default for RV32CPU {
     fn default() -> Self {
-        RiscvCPU {
+        RV32CPU {
             regs: reg::Regs::new(),
             mems: mem::Mem::new(),
             mode: PrivilegeMode::Machine,
@@ -33,9 +33,9 @@ impl Default for RiscvCPU {
     }
 }
 
-impl RiscvCPU {
+impl RV32CPU {
     pub fn new(regs: reg::Regs, mems: mem::Mem) -> Self {
-        RiscvCPU {
+        RV32CPU {
             regs,
             mems,
             mode: PrivilegeMode::Machine,
@@ -43,7 +43,7 @@ impl RiscvCPU {
     }
 }
 
-impl Index<u32> for RiscvCPU {
+impl Index<u32> for RV32CPU {
     type Output = u32;
 
     fn index(&self, index: u32) -> &Self::Output {
@@ -51,13 +51,13 @@ impl Index<u32> for RiscvCPU {
     }
 }
 
-impl IndexMut<u32> for RiscvCPU {
+impl IndexMut<u32> for RV32CPU {
     fn index_mut(&mut self, index: u32) -> &mut Self::Output {
         &mut self.regs[index]
     }
 }
 
-impl MemoryModel for RiscvCPU {
+impl MemoryModel for RV32CPU {
     fn load_mem(&mut self, index: u32, bytes: u8) -> Option<u32> {
         self.mems.load_mem(index, bytes)
     }
@@ -67,7 +67,7 @@ impl MemoryModel for RiscvCPU {
     }
 }
 
-impl RegisterModel for RiscvCPU {
+impl RegisterModel for RV32CPU {
 
     #[inline]
     fn read_register_by_name(&self, name: &str) -> Option<u32> {
@@ -111,7 +111,7 @@ impl RegisterModel for RiscvCPU {
 
 }
 
-impl ISA for RiscvCPU {
+impl ISA for RV32CPU {
     fn name(&self) -> String {
         "RISC-V 32".to_string()
     }
@@ -154,11 +154,11 @@ impl ISA for RiscvCPU {
 #[cfg(test)]
 mod tests {
 
-    use super::RiscvCPU;
+    use super::RV32CPU;
 
     #[test]
     fn test_basic() {
-        let mut riscvisa = RiscvCPU::default();
+        let mut riscvisa = RV32CPU::default();
         riscvisa[4] = 100;
         assert_eq!(riscvisa[4], 100);
     }

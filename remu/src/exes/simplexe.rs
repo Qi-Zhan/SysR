@@ -344,14 +344,14 @@ impl SimpleExe {
 
 #[cfg(test)]
 mod tests {
-    use crate::isas::{riscv::RiscvCPU, RegisterModel};
+    use crate::isas::{riscv::RV32CPU, RegisterModel};
 
     use super::*;
 
     #[test]
     fn test_simple_exe() {
         let path = "tests/sample.S";
-        let mut cpu = RiscvCPU::default();
+        let mut cpu = RV32CPU::default();
         let mut exe = SimpleExe::parse_path(path).unwrap();
         println!("{:#?}", exe.asm);
         exe.load_binary(&mut cpu).unwrap();
@@ -361,7 +361,7 @@ mod tests {
 
     #[test]
     fn test_parse_assembly() {
-        let cpu = RiscvCPU::default();
+        let cpu = RV32CPU::default();
         let add = Instruction::RType(0, (1, 2), 0b000, 3, 0b0110011);
         let exe = SimpleExe::default();
         assert_eq!(
