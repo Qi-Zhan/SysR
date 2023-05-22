@@ -3,37 +3,46 @@
 #![allow(dead_code)]
 use core::arch::{asm, global_asm};
 
-// global_asm!(include_str!("trap_pro.S"));
+global_asm!(include_str!("trap.S"));
 
-/// init exception entry, 
-pub fn init(handler: &fn(Event, &Context) -> Context) {
-    // #[cfg(target_arch="riscv32")]
-    // println!("{:p}", moo as *const ());
+static mut IRQ: Option<fn(Event, &mut Context)> = None;
+
+/// init exception entry, register exception handler
+#[no_mangle]
+pub fn init(irq: fn(Event, &mut Context)) {
+    unsafe {
+        IRQ = Some(irq);
+    }
+    #[cfg(target_arch="riscv32")]
     unsafe {
         asm!(
             "la t0, am_asm_trap",
             "csrw mtvec, t0",
             // mstatus初始化为0x1800.
             "csrw mstatus, {x1}",
-            // x0 = in(reg) am_handler as *const () as u32,
-            // x0 = in(reg) am_asm_trap as u32,
             x1 = in(reg) 0x1800,
         );
     }
-    todo!("init");
 }
 
-pub fn am_handler(context: &Context) -> Context {
-    let ev = match context.mcause {
-        0xffffffff  =>  Event::Yield,
-        _           =>  Event::Error,
-        
+#[no_mangle]
+pub fn _am_handler(context: &mut Context) {
+    let event = match context.mcause {
+        0xb => {
+            match context.regs[17] {
+                0xffffffff => Event::Yield,
+                _ => Event::Syscall,
+            }
+        }
+        _ =>  Event::Error,
     };
-
-    todo!("am_handler");
+    unsafe {
+        IRQ.unwrap()(event, context);
+    }
 }
 
 #[repr(C)]
+#[derive(Debug, Clone, Copy)]
 pub struct Context {
     pub regs:       [u32; 32],
     pub mcause:     u32,
@@ -41,6 +50,7 @@ pub struct Context {
     pub mepc:       u32,
 }
 
+#[no_mangle]
 pub fn yield_() {
     #[cfg(target_arch="riscv32")]
     unsafe {
@@ -52,9 +62,9 @@ pub fn yield_() {
 }
 
 pub fn ienable() -> bool {
-    let mut old: u32 = 0;
     #[cfg(target_arch="riscv32")]
     unsafe {
+        let mut old: u32 = 0;
         asm!(
             "csrr {x0}, mie",
             "csrrw {x0}, mie, {x1}",
@@ -64,22 +74,24 @@ pub fn ienable() -> bool {
             x0 = out(reg) old,
             x1 = in(reg) 0x80,
         );
+        return old != 0
     }
-    old != 0
+    false
 }
 
-pub fn iset(enable: bool) {
+pub fn iset(_enable: bool) {
     #[cfg(target_arch="riscv32")]
     unsafe {
         asm!(
             "csrrw x0, mie, {x1}",
-            x1 = in(reg) if enable { 0x80 } else { 0 },
+            x1 = in(reg) if _enable { 0x80 } else { 0 },
         );
     }
 }
 
+#[derive(Debug)]
+#[repr(C)]
 pub enum Event {
-    Null,
     Yield,
     Syscall,
     Pagefault,

@@ -1,4 +1,4 @@
-use remu::debug::debugger::Debugger;
+use remu::rdb::debugger::Debugger;
 use remu::isas::riscv::RV32CPU;
 use remu::exes::Exe;
 use remu::exes::elf::ELF;

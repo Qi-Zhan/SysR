@@ -4,43 +4,42 @@
 use ram::*;
 use ram::cte::{Event, Context};
 use ram::klib::puts;
-
-// cargo build --target riscv32i-unknown-none-elf 
-// cargo build --target riscv32i-unknown-none-elf --release
+use ram::tm::halt;
 
 mod syscall;
 mod filesystem;
 
-pub fn on_interrupt(event: Event, context: &Context) -> Context {
-    puts("on_interrupt\n");
+#[no_mangle]
+pub fn _on_interrupt(event: Event, context: &mut Context)  {
     match event {
         Event::Yield => {
+            context.mepc += 4;
             puts("yield\n");
-            *context.clone()
         },
         Event::Error => {
             puts("error\n");
-            *context.clone()
         },
         Event::Syscall => {
             puts("syscall\n");
-            *context.clone()
-            // syscall::do_syscall(context)
+            syscall::do_syscall(&context);
+            context.mepc += 4;
         },
         _ => {
             puts("unknown\n");
-            *context.clone()
+            halt(11);
         },
     }
 }
 
 #[no_mangle]
 pub extern "C" fn _start(_argc: isize, _argv: *const *const u8) -> ! {
-    cte::init(&on_interrupt);
 
+    cte::init(_on_interrupt);
+    let mut count = 0;
+    puts("Hello, world!\n");
     loop {
         cte::yield_();
-        puts("Hello, world!\n");
-        tm::halt(0);
+        count += 1;
+        println!("count {count}");
     }
 }

@@ -22,10 +22,10 @@ macro_rules! info {
         // 📘: action message
         // 📓: debug status message
         // 📔: Or anything you like and want to recognize immediately by color
-        print!("{}", "[INFO]: ".blue().bold());
-        // print!("{}", $crate::color::bold(&$crate::color::blue("[INFO]: ")));
-        print!("{:<40} [{}:{}:{}] ",
-        $crate::function!(), file!(), line!(), column!());
+        print!("{}", "[INFO] ".blue().bold());
+        // print!("{:<40} [{}:{}:{}] ",
+        // $crate::function!(), file!(), line!(), column!());
+        print!("[{}:{}] ", file!(), line!());
         println!($($arg)*);
     })
 }
@@ -34,7 +34,7 @@ macro_rules! info {
 macro_rules! warn {
     ($($arg:tt)*) => ({
         use colored::Colorize;
-        print!("{}, ", "[WARN]: ".yellow().bold());
+        print!("{}, ", "[WARN] ".yellow().bold());
         print!("{} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);
@@ -45,7 +45,7 @@ macro_rules! warn {
 macro_rules! error {
     ($($arg:tt)*) => ({
         use colored::Colorize;
-        print!("{}", "[ERROR]: ".red().bold());
+        print!("{}", "[ERROR] ".red().bold());
         print!("{} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);
@@ -56,7 +56,7 @@ macro_rules! error {
 macro_rules! debug {
     ($($arg:tt)*) => ({
         use colored::Colorize;
-        print!("[DEBUG]: ");
+        print!("{}", "[DEBUG] ".bold());
         print!("{} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);

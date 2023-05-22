@@ -130,6 +130,10 @@ impl Debugger {
     fn step(&mut self, cpu: &mut impl ISA, count: u64) -> Result<(), RError> {
         for _ in 0..count {
             let step_result = cpu.step();
+            // if cpu.pc() != 0x11448 {
+            //     debug!("pc: {:#x}", cpu.pc());
+
+            // }
             match step_result {
                 Ok(_) => (),
                 _ => return step_result,

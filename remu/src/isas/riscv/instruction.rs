@@ -4,8 +4,9 @@ use super::reg::Regs;
 
 use crate::{
     error::RError,
-    isas::{Inst, ISA},
+    isas::{Inst, ISA}
 };
+
 
 type Imm = u32;
 type Src = (u32, u32);
@@ -15,6 +16,10 @@ type Fun7 = u32;
 type Opcode = u32;
 type Csr = u32;
 
+const ECALL: u32   = 0b0000_0000_0000_0000_0000_0000_0111_0011;
+const EBREAK: u32  = 0b0000_0000_0001_0000_0000_0000_0111_0011;
+const SRET : u32   = 0b0001_0000_0010_0000_0000_0000_0111_0011;
+const MRET : u32   = 0b0011_0000_0010_0000_0000_0000_0111_0011;
 
 #[inline]
 fn opcode(code: u32) -> u32 {
@@ -329,8 +334,6 @@ impl std::fmt::Display for Instruction {
     }
 }
 
-
-
 impl Inst for Instruction {
     fn assemble(&self) -> u32 {
         match self {
@@ -376,7 +379,6 @@ impl Inst for Instruction {
     fn disassemble(&self) -> String {
         self.to_string()
     }
-
 
     fn execute(&self, cpu: &mut impl ISA) -> Result<u32, RError> {
         match self {
@@ -499,7 +501,7 @@ impl Inst for Instruction {
             }
             Instruction::UType(imm, rd, opcode) => {
                 match opcode {
-                    0b0110111 => cpu[*rd] = *imm, // lui
+                    0b0110111 => cpu[*rd] = *imm,                       // lui
                     0b0010111 => cpu[*rd] = imm.wrapping_add(cpu.pc()), // auipc
                     _ => panic!("Invalid opcode"),
                 }
@@ -513,19 +515,20 @@ impl Inst for Instruction {
             Instruction::Nop => Ok(cpu.pc() + 4),
             Instruction::CSRType(csr, (rs1, _), funct3, rd, _) => {
                 let assemble = self.assemble();
-                if assemble == 0b0000_0000_0000_0000_0000_0000_0111_0011 { // ecall
-                    cpu.write_register_by_name("mepc", cpu.pc());
-                    cpu.write_register_by_name("mcause", 0);
-                    return Ok(cpu.read_register_by_name("mtvec").unwrap())
-                } else if assemble == 0b0000_0000_0001_0000_0000_0000_0111_0011 { // ebreak
+                if assemble == ECALL {
+                    cpu.write_register_by_name("mepc", cpu.pc()); // save pc
+                    cpu.write_register_by_name("mcause", 0x0000000b); // ecall
+                    return Ok(cpu.read_register_by_name("mtvec").unwrap());
+                } else if assemble == EBREAK {
+                    // ebreak
                     return Err(RError::Ebreak(
                         cpu.read_register_by_name("a0").unwrap() as i8
                     ));
-                } else if assemble == 0b0001_0000_0010_0000_0000_0000_0111_0011 {
+                } else if assemble == SRET {
                     // sret
                     let return_value = cpu.read_register_by_name("sepc").unwrap();
                     return Ok(return_value);
-                } else if assemble == 0b0011_0000_0010_0000_0000_0000_0111_0011 {
+                } else if assemble == MRET {
                     // mret
                     let return_value = cpu.read_register_by_name("mepc").unwrap();
                     return Ok(return_value);
@@ -543,7 +546,7 @@ impl Inst for Instruction {
                         // csrrs R[rd]=CSR; CSR=CSR|R[rs1]
                         let csr_value = cpu.read_register_previlege(*csr).unwrap();
                         let src = cpu[*rs1];
-                        cpu[*rd] = csr_value; 
+                        cpu[*rd] = csr_value;
                         cpu.write_register_previlege(*csr, csr_value | src);
                     }
                     0b011 => {
@@ -648,8 +651,8 @@ impl Inst for Instruction {
 #[cfg(test)]
 mod tests {
 
-    use super::*;
     use super::super::RV32CPU;
+    use super::*;
     use crate::isas::RegisterModel;
     #[test]
     fn test_add_sub() {
@@ -717,10 +720,7 @@ mod tests {
         // x17 = 0x55551111 ， then xori x12,x17,0x800 will set x12 0xaaaae911.
         cpu[17] = 0x55551111;
         let xori = Instruction::IType(0xfffff800, (17, 0), 0b100, 12, 0b0010011); // xori x12,x17,0x800
-        assert_eq!(
-            cpu[17] ^ 0xfffff800_u32,
-            0xaaaae911_u32
-        );
+        assert_eq!(cpu[17] ^ 0xfffff800_u32, 0xaaaae911_u32);
         xori.execute(&mut cpu).unwrap();
         assert_eq!(cpu[12], 0xaaaae911);
 
@@ -750,7 +750,6 @@ mod tests {
         cpu[18] = 0x8000ffff;
         sltu.execute(&mut cpu).unwrap();
         assert_eq!(cpu[12], 0x00000001);
-
 
         // If x17 = 0x82345678 and x18 = 0x0000ffff then the instruction slt x12,x17,x18 will set
         // x12 to the value 0x00000001.
@@ -787,8 +786,6 @@ mod tests {
         srai.execute(&mut cpu).unwrap();
         assert_eq!(cpu[12], 0xf8765432);
     }
-
-
 
     #[test]
     fn test_addi() {
@@ -830,5 +827,4 @@ mod tests {
         cpu.execute(code).unwrap();
         assert_eq!(cpu.read_register_by_name("ra").unwrap(), 0x80000000);
     }
-
 }

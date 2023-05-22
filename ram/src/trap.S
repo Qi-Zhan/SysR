@@ -1,51 +1,91 @@
-
-#define concat_temp(x, y) x ## y
-#define concat(x, y) concat_temp(x, y)
-#define MAP(c, f) c(f)
-
-#define REGS(f) \
-      f( 1)       f( 3) f( 4) f( 5) f( 6) f( 7) f( 8) f( 9) \
-f(10) f(11) f(12) f(13) f(14) f(15) f(16) f(17) f(18) f(19) \
-f(20) f(21) f(22) f(23) f(24) f(25) f(26) f(27) f(28) f(29) \
-f(30) f(31)
-
-#define PUSH(n) sd concat(x, n), (n * 8)(sp);
-#define POP(n)  ld concat(x, n), (n * 8)(sp);
-
-#define CONTEXT_SIZE ((32 + 3) * 8)
-#define OFFSET_SP     ( 2 * 8)
-#define OFFSET_CAUSE  (32 * 8)
-#define OFFSET_STATUS (33 * 8)
-#define OFFSET_EPC    (34 * 8)
-
 .globl am_asm_trap
 am_asm_trap:
-  addi sp, sp, -CONTEXT_SIZE
+  addi sp, sp, -((32 + 3) * 4)
 
-  MAP(REGS, PUSH)
+  sw x1, (1 * 4)(sp)
+  sw x3, (3 * 4)(sp)
+  sw x4, (4 * 4)(sp)
+ sw x5, (5 * 4)(sp)
+ sw x6, (6 * 4)(sp)
+ sw x7, (7 * 4)(sp)
+ sw x8, (8 * 4)(sp)
+ sw x9, (9 * 4)(sp)
+ sw x10, (10 * 4)(sp)
+ sw x11, (11 * 4)(sp)
+ sw x12, (12 * 4)(sp)
+ sw x13, (13 * 4)(sp)
+ sw x14, (14 * 4)(sp)
+ sw x15, (15 * 4)(sp)
+ sw x16, (16 * 4)(sp)
+ sw x17, (17 * 4)(sp)
+ sw x18, (18 * 4)(sp)
+ sw x19, (19 * 4)(sp)
+ sw x20, (20 * 4)(sp)
+ sw x21, (21 * 4)(sp)
+ sw x22, (22 * 4)(sp)
+ sw x23, (23 * 4)(sp)
+ sw x24, (24 * 4)(sp)
+ sw x25, (25 * 4)(sp)
+ sw x26, (26 * 4)(sp)
+ sw x27, (27 * 4)(sp)
+ sw x28, (28 * 4)(sp)
+ sw x29, (29 * 4)(sp)
+ sw x30, (30 * 4)(sp)
+ sw x31, (31 * 4)(sp)
+
 
   mv t0, sp
-  addi t0, t0, CONTEXT_SIZE
-  sd t0, OFFSET_SP(sp)
+  addi t0, t0, ((32 + 3) * 4)
+  sw t0, ( 2 * 4)(sp)
 
   csrr t0, mcause
   csrr t1, mstatus
   csrr t2, mepc
 
-  sd t0, OFFSET_CAUSE(sp)
-  sd t1, OFFSET_STATUS(sp)
-  sd t2, OFFSET_EPC(sp)
+  sw t0, (32 * 4)(sp)
+  sw t1, (33 * 4)(sp)
+  sw t2, (34 * 4)(sp)
 
   mv a0, sp
-  jal __am_irq_handle
+  jal _am_handler 
 
-  ld t1, OFFSET_STATUS(sp)
-  ld t2, OFFSET_EPC(sp)
+  lw t1, (33 * 4)(sp)
+  lw t2, (34 * 4)(sp)
   csrw mstatus, t1
   csrw mepc, t2
 
-  MAP(REGS, POP)
+  lw x1, (1 * 4)(sp)
+ lw x3, (3 * 4)(sp)
+ lw x4, (4 * 4)(sp)
+ lw x5, (5 * 4)(sp)
+ lw x6, (6 * 4)(sp)
+ lw x7, (7 * 4)(sp)
+ lw x8, (8 * 4)(sp)
+ lw x9, (9 * 4)(sp)
+ lw x10, (10 * 4)(sp)
+ lw x11, (11 * 4)(sp)
+ lw x12, (12 * 4)(sp)
+ lw x13, (13 * 4)(sp)
+ lw x14, (14 * 4)(sp)
+ lw x15, (15 * 4)(sp)
+ lw x16, (16 * 4)(sp)
+ lw x17, (17 * 4)(sp)
+ lw x18, (18 * 4)(sp)
+ lw x19, (19 * 4)(sp)
+ lw x20, (20 * 4)(sp)
+ lw x21, (21 * 4)(sp)
+ lw x22, (22 * 4)(sp)
+ lw x23, (23 * 4)(sp)
+ lw x24, (24 * 4)(sp)
+ lw x25, (25 * 4)(sp)
+ lw x26, (26 * 4)(sp)
+ lw x27, (27 * 4)(sp)
+ lw x28, (28 * 4)(sp)
+ lw x29, (29 * 4)(sp)
+ lw x30, (30 * 4)(sp)
+ lw x31, (31 * 4)(sp)
 
-  addi sp, sp, CONTEXT_SIZE
+
+  addi sp, sp, ((32 + 3) * 4)
 
   mret
