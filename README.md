@@ -1,4 +1,4 @@
-# System-R
+# SysR
 
 A learning and just for full system emulator project inspired by [nemu](https://github.com/NJU-ProjectN/nemu).
 We aim to implement almost everything in a computer system, including CPU, Memory, IO, OS, etc.
