@@ -1,14 +1,16 @@
 use super::IO;
+use console::Term;
 
 #[derive(Debug)]
 pub(crate) struct SerialPort {
     base: u64,
     irq: u8,
+    term: Term,
 }
 
 impl SerialPort {
     pub(crate) fn new(base: u64, irq: u8) -> Self {
-        Self { base, irq }
+        Self { base, irq , term: Term::stdout()}
     }
 }
 
@@ -28,7 +30,7 @@ impl IO for SerialPort {
     }
 
     fn read(&mut self, _addr: u64) -> Option<u32> {
-        None
+        self.term.read_char().ok().map(|c| c as u32)
     }
 
     fn write(&mut self, _addr: u64, value: u64) {

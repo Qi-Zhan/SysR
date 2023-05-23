@@ -1,11 +1,8 @@
 use std::io::Write;
-
 use colored::Colorize;
-
-use super::breakpoint::Breakpoints;
-use super::eval::eval;
-use crate::isas::ISA;
+use super::{breakpoint::Breakpoints, eval::eval};
 use crate::error::RError;
+use crate::isas::ISA;
 
 #[derive(Debug, PartialEq)]
 enum DebuggerState {
@@ -123,7 +120,6 @@ impl Debugger {
             }
             self.check_breakpoint(cpu);
         }
-        
     }
 
     fn step(&mut self, cpu: &mut impl ISA, count: u64) -> Result<(), RError> {
@@ -309,7 +305,6 @@ impl Debugger {
             }
         }
     }
-
 }
 
 #[cfg(test)]

@@ -2,6 +2,8 @@
 
 use core::fmt::Write;
 
+use crate::io::IO;
+
 pub fn rand() -> u32 {
     static mut SEED: u32 = 0xdeadbeef;
     unsafe {

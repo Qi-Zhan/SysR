@@ -38,9 +38,11 @@ pub extern "C" fn _start(_argc: isize, _argv: *const *const u8) -> ! {
     cte::init(on_interrupt);
     // puts(utils::LOGO);
     let mut count = 0;
+    let buffer: [u32; 1024] = [0; 1024]; 
     // TODO: kernel level shell
     loop {
         puts("ROS> ");
+        
         cte::yield_();
         count += 1;
         println!("count {count}");

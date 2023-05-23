@@ -1,18 +1,12 @@
-#![allow(unused_assignments)]
 // -------------------- IOE: Input/Output Devices --------------------
 
 use core::fmt::Write;
 
-#[derive(Debug)]
-pub enum Device {
-    SerialPort,
-    KeyBoard,
-    Vga,
-    Audio,
-    Disk,
-    Fb,
-    AudioSbuf,
-    Timer,
+pub trait IO {
+    type Input;
+    type Output;
+    fn read() -> Self::Input;
+    // it seems that we do not need write in IO trait
 }
 
 pub struct SerialPort;
@@ -20,13 +14,37 @@ pub struct Timer;
 pub struct KeyBoard;
 pub struct Vga;
 
-impl Timer {
-    pub fn read() -> u64 {
+impl IO for Timer {
+    type Input = u64;
+    type Output = ();
+    fn read() -> Self::Input {
         unsafe {
             let clock_low32 = (TIMER_ADDR as *mut u32).read_volatile();
             let clock_high32 = ((TIMER_ADDR + 4) as *mut u32).read_volatile();
             ((clock_high32 as u64) << 32) | (clock_low32 as u64)
         }
+    }
+}
+
+impl IO for KeyBoard {
+    type Input = Option<KBEvent>;
+    type Output = ();
+    fn read() -> Self::Input {
+        unsafe {
+            let code = (KBD_ADDR as *mut u32).read_volatile();
+            match code {
+                0 => None,
+                _ => Some(KBEvent::from(code)),
+            }
+        }
+    }
+}
+
+impl IO for SerialPort {
+    type Input = u8;
+    type Output = ();
+    fn read() -> Self::Input {
+        unsafe { (SERIAL_PORT as *mut u8).read_volatile() }
     }
 }
 
@@ -42,24 +60,10 @@ impl Write for SerialPort {
     }
 }
 
-impl KeyBoard {
-    pub fn read() -> Option<KBEvent> {
-        let mut code: u32 = 0;
-        unsafe {
-            code = (KBD_ADDR as *mut u32).read_volatile();
-        }
-        match code {
-            0 => None,
-            _ => Some(KBEvent::from(code)),
-        }
-    }
-}
-
 impl Vga {
     pub fn write_all(buffer: &[u32]) {
         unsafe {
             for (index, item) in buffer.iter().enumerate() {
-                // ((VGA_ADDR + (index * 4) as u64) as *mut u32).write_volatile(*item);
                 ((VGA_ADDR + (index * 4) as u64) as *mut u32).write(*item);
             }
         }
