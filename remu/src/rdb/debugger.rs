@@ -4,7 +4,6 @@ use colored::Colorize;
 
 use super::breakpoint::Breakpoints;
 use super::eval::eval;
-use crate::info;
 use crate::isas::ISA;
 use crate::error::RError;
 
@@ -98,7 +97,7 @@ impl Default for Debugger {
 
 impl Debugger {
     pub fn new() -> Debugger {
-        info!("Debugger initialized");
+        println!("{}", crate::util::RDB_LOGO);
         Debugger {
             state: DebuggerState::Init,
             bps: Breakpoints::new(),

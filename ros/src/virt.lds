@@ -16,7 +16,7 @@ In the rest of this script, we are going to place _start
 right at the beginning of 0x8000_0000 because this is where
 the virtual machine and many RISC-V boards will start executing.
 */
-ENTRY( _start)
+ENTRY(_start)
 
 /*
 The MEMORY section will explain that we have "ram" that contains

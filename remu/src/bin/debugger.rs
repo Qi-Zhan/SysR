@@ -12,7 +12,8 @@ fn main() {
         if args.len() == 2 {
             ELF::parse_path(&args[1]).unwrap()
         } else {
-            ELF::parse_path("/Users/zhanqi/project/riscv-tests/isa/rv32ui-p-add").unwrap()
+            println!("Usage: {} <elf>", args[0]);
+            std::process::exit(1);
         }
     };
     exe.load_binary(&mut cpu).unwrap();
