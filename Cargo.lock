@@ -92,10 +92,6 @@ name = "rapps"
 version = "0.1.0"
 
 [[package]]
-name = "rc"
-version = "0.1.0"
-
-[[package]]
 name = "remu"
 version = "0.1.0"
 dependencies = [

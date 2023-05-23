@@ -1,7 +1,6 @@
 [workspace]
 
 members = [
-    "rc",
     "ros",
     "remu",
     "ram",
