@@ -8,16 +8,13 @@ use ram::cte::{Context, Event};
 use ram::klib::puts;
 use ram::tm::halt;
 use ram::*;
+use rconfig::layout::USER_APP_BASE;
 
 mod allocater;
 mod filesystem;
 mod loader;
 mod syscall;
 mod utils;
-
-// set 0x83000000 as the base address of the user application shell
-const USER_APP_BASE: usize = 0x83000000;
-const USER_APP_SIZE: usize = 0x100000; // 1MB
 
 #[no_mangle]
 pub fn on_interrupt(event: Event, context: &mut Context) {
@@ -69,7 +66,7 @@ unsafe fn load_apps() {
 }
 
 #[no_mangle]
-pub extern "C" fn _start(_argc: isize, _argv: *const *const u8) -> ! {
+pub extern "C" fn _start() -> ! {
     unsafe {
         load_apps();
     }

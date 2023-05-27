@@ -16,6 +16,7 @@ pub fn syscall(cause: u32, arg1: Option<u32>, arg2: Option<u32>) -> u32 {
         );
         return ret;
     }
+    //  if malloc or free, use global allocator, global allocator use syscall
     0
 }
 

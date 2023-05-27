@@ -22,6 +22,7 @@ pub mod ios {
 
 /* Interface of ROS and RAPPS */
 pub mod syscall {
+    /// syscall number
     pub const SYSCALL_EXIT: usize = 93;
     pub const SYSCALL_WRITE: usize = 64;
     pub const SYSCALL_READ: usize = 63;
@@ -32,6 +33,16 @@ pub mod syscall {
     pub const SYSCALL_WAITPID: usize = 260;
     pub const SYSCALL_GETPID: usize = 172;
     pub const SYSCALL_SLEEP: usize = 101;
+    /// syscall register index
+    pub const SYSCALL_REG_NUM: usize = 17; // a7
+    pub const SYSCALL_REG_ARG0: usize = 10; // a0
+    pub const SYSCALL_REG_ARG1: usize = 11;
+    pub const SYSCALL_REG_ARG2: usize = 12;
+    pub const SYSCALL_REG_ARG3: usize = 13;
+    pub const SYSCALL_REG_ARG4: usize = 14;
+    pub const SYSCALL_REG_ARG5: usize = 15;
+    pub const SYSCALL_REG_ARG6: usize = 16;
+    pub const SYSCALL_REG_RET: usize = 10;
 }
 /* Layout of OS kernel */
 // TODO: a graph
@@ -39,4 +50,13 @@ pub mod layout {
     pub const KERNEL_START: usize = 0x80000000;
     pub const KERNEL_HEAP_START: usize = 0x84000000;
     pub const KERNEL_HEAP_END: usize = 0xa0000000;
+    pub const USER_APP_BASE: usize = 0x83000000;
+    pub const USER_APP_SIZE: usize = 0x100000; // every app 1MB
+}
+
+/* Standard input/output/error settings */
+pub mod std_io {
+    pub const STDIN: usize = 0;
+    pub const STDOUT: usize = 1;
+    pub const STDERR: usize = 2;
 }

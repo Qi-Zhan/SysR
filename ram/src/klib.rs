@@ -41,3 +41,25 @@ pub fn puts(s: &str) {
     let mut serial = crate::io::SerialPort;
     serial.write_str(s).unwrap();
 }
+
+/// # Safety
+///
+/// `dest` and `src` must be valid pointers.
+pub unsafe fn memcpy(dest: *mut u8, src: *const u8, n: usize) {
+    let mut p = dest;
+    for i in 0..n {
+        *p = *src.add(i);
+        p = p.offset(1);
+    }
+}
+
+/// # Safety
+/// 
+/// `dest` must be a valid pointer.
+pub unsafe fn memset(dest: *mut u8, c: u8, n: usize) {
+    let mut p = dest;
+    for _ in 0..n {
+        *p = c;
+        p = p.offset(1);
+    }
+}
