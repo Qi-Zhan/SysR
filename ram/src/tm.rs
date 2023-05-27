@@ -22,5 +22,9 @@ pub fn halt(code: i8) {
 #[panic_handler]
 #[cfg(not(test))]
 fn panic(_info: &core::panic::PanicInfo) -> ! {
+    use crate::{println, print};
+    print!("\x1b[1;31m");
+    println!("{}", _info);
+
     loop {}
 }

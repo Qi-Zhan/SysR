@@ -23,6 +23,7 @@ pub fn init(irq: fn(Event, &mut Context)) {
             x1 = in(reg) 0x1800,
         );
     }
+    iset(true); // turn on interrupt
 }
 
 #[no_mangle]

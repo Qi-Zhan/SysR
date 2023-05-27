@@ -31,7 +31,7 @@ impl Display for RError {
             RError::InvalidAssembly(s) => write!(f, "{}: {}", ("InvalidAssembly").bold().red(), s),
             RError::Ebreak(return_code) => {
                 match *return_code {
-                    0 => write!(f, "{}", ("program exited").bold().green()),
+                    0 => write!(f, "{}", ("program exited with code 0").bold().green()),
                     _ => write!(f, "{} with code {}", ("program exited").bold().red() , return_code),
                 }
             }
