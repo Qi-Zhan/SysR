@@ -1,10 +1,11 @@
 use core::alloc::{GlobalAlloc, Layout};
-use ram::{println, print};
-pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
+use ram::{print, println};
+use rconfig::layout;
 
-const HEAP_START: usize = 0x84000000;
-const HEAP_END: usize = 0xffffffff;
-static mut INDEX : usize = HEAP_START;
+const HEAP_START: usize = layout::KERNEL_HEAP_START;
+const HEAP_END: usize = layout::KERNEL_HEAP_END;
+static mut INDEX: usize = HEAP_START;
+
 struct Mutex<T> {
     locked: bool,
     data: T,
@@ -22,9 +23,7 @@ impl<T> Mutex<T> {
             // spin
         }
         self.locked = true;
-        MutexGuard {
-            lock: self,
-        }
+        MutexGuard { lock: self }
     }
 }
 
@@ -66,15 +65,25 @@ fn align_up(addr: usize, align: usize) -> usize {
 
 unsafe impl GlobalAlloc for Locked<MyAllocator> {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        println!("allocating {} bytes with alignment {} from {:#x} to {:#x}", layout.size(), layout.align(), INDEX, INDEX + layout.size());
-        let alloc_start = align_up(INDEX, layout.align());        
+        println!(
+            "allocating {} bytes with alignment {} from {:#x} to {:#x}",
+            layout.size(),
+            layout.align(),
+            INDEX,
+            INDEX + layout.size()
+        );
+        let alloc_start = align_up(INDEX, layout.align());
         let alloc_end = match alloc_start.checked_add(layout.size()) {
             Some(alloc_end) => alloc_end,
             None => return core::ptr::null_mut(),
         };
         INDEX = alloc_end;
-        alloc_start as *mut u8
+        if alloc_end > HEAP_END {
+            println!("out of memory");
+            core::ptr::null_mut()
+        } else {
+            alloc_start as *mut u8
+        }
     }
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-    }
+    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {}
 }

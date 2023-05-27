@@ -1,5 +1,5 @@
 [package]
-name = "ros"
+name = "rconfig"
 version = "0.1.0"
 edition = "2021"
 authors.workspace = true
@@ -8,5 +8,3 @@ repository.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ram = {path = "../ram"}
-rconfig = {path = "../rconfig"}

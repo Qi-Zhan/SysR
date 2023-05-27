@@ -11,3 +11,4 @@ console = "0.15.7"
 lazy_static = "1.4.0"
 linearparse-derive = { path = "./linearparse-derive" }
 sdl2 = "0.35.2"
+rconfig = {path = "../rconfig"}

@@ -105,9 +105,19 @@ dependencies = [
 [[package]]
 name = "ram"
 version = "0.1.0"
+dependencies = [
+ "rconfig",
+]
 
 [[package]]
 name = "rapps"
+version = "0.1.0"
+dependencies = [
+ "rconfig",
+]
+
+[[package]]
+name = "rconfig"
 version = "0.1.0"
 
 [[package]]
@@ -118,6 +128,7 @@ dependencies = [
  "console",
  "lazy_static",
  "linearparse-derive",
+ "rconfig",
  "sdl2",
 ]
 
@@ -126,6 +137,7 @@ name = "ros"
 version = "0.1.0"
 dependencies = [
  "ram",
+ "rconfig",
 ]
 
 [[package]]

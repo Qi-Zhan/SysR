@@ -5,6 +5,7 @@ members = [
     "remu",
     "ram",
     "rapps",
+    "rconfig",
 ]
 
 [workspace.package]
