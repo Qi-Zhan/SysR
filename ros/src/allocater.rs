@@ -85,5 +85,13 @@ unsafe impl GlobalAlloc for Locked<MyAllocator> {
             alloc_start as *mut u8
         }
     }
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {}
+    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+        println!(
+            "deallocating {} bytes with alignment {} from {:#x} to {:#x}",
+            layout.size(),
+            layout.align(),
+            INDEX,
+            INDEX + layout.size()
+        );
+    }
 }

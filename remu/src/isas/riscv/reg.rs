@@ -33,9 +33,7 @@ lazy_static! {
             (0x142, "scause"), (0x143, "stval"), (0x144, "sip"),
             (0x180, "satp"),
             (0xC00, "cyclel"), (0xC01, "time"), (0xC02, "instret"),
-            // TODO: Add hpmcounter*
             (0xC80, "cycleh"), (0xC81, "timeh"), (0xC82, "instreth"),
-            // TODO: Add hpmcounter*h
             (0x300, "mstatus"), (0x301, "misa"), (0x302, "medeleg"),
             (0x303, "mideleg"), (0x304, "mie"), (0x305, "mtvec"),
             (0x306, "mcounteren"), (0x310, "mscratch"), (0x340, "mscratch"),

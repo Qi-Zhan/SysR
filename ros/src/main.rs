@@ -2,13 +2,10 @@
 #![no_main]
 
 extern crate alloc;
-use alloc::vec;
-
+use core::arch::asm;
+use loader::load_file;
 use ram::cte::{Context, Event};
-use ram::klib::puts;
-use ram::tm::halt;
-use ram::*;
-use rconfig::layout::USER_APP_BASE;
+use ram::{klib::puts, tm::halt, *};
 
 mod allocater;
 mod filesystem;
@@ -21,63 +18,32 @@ pub fn on_interrupt(event: Event, context: &mut Context) {
     match event {
         Event::Yield => {
             context.mepc += 4;
-            puts("yield\n");
         }
         Event::Error => {
             puts("error\n");
         }
         Event::Syscall => {
-            puts("syscall\n");
-            syscall::do_syscall(&context);
+            syscall::do_syscall(context);
             context.mepc += 4;
         }
         _ => {
             puts("unknown\n");
-            halt(11);
+            halt(1);
         }
     }
-}
-
-// shell, cat, ls, etc.
-
-const APPS: [&str; 4] = ["shell", "cat", "ls", "echo"];
-
-macro_rules! copy_app {
-    ($app: literal, $base: expr) => {
-        let app = include_bytes!(concat!(
-            "../../target/riscv32i-unknown-none-elf/release/",
-            $app
-        ));
-        let app_len = app.len();
-        let mut p = $base as *mut u8;
-        for i in 0..app_len {
-            *p = app[i];
-            p = p.offset(1);
-        }
-    };
-}
-
-unsafe fn load_apps() {
-    // TDOO: set the function and logic to build.rs
-    copy_app!("shell", USER_APP_BASE);
-    // copy_app!("cat", USER_APP_BASE + USER_APP_SIZE);
-    // copy_app!("ls", USER_APP_BASE + USER_APP_SIZE * 2);
-    // copy_app!("echo", USER_APP_BASE + USER_APP_SIZE * 3);
 }
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    unsafe {
-        load_apps();
-    }
-
     cte::init(on_interrupt);
-    let mut vec = vec![1, 2, 3];
-    for i in vec.iter() {
-        println!("{}", i);
-    }
-    for i in 0..10000 {
-        vec.push(i);
+    let fs = filesystem::FileSystem::new();
+    let entry = load_file(&fs.files[0]);
+    // jump to entry
+    unsafe {
+        asm!(
+            "jr {0}",
+            in(reg) entry,
+        )
     }
     halt(0);
     let mut count = 0;
@@ -85,5 +51,19 @@ pub extern "C" fn _start() -> ! {
         cte::yield_();
         count += 1;
         println!("count {count}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use alloc::vec;
+    #[test]
+    fn alloc_test() {
+        let mut vec = vec![1, 2, 3];
+        assert_eq!(vec.len(), 3);
+        for i in 0..10000 {
+            vec.push(i);
+            assert_eq!(vec.len(), i + 4)
+        }
     }
 }
