@@ -1,4 +1,10 @@
-// ---------- CTE: Interrupt Handling and Context Switching ----------
+//! ---------- CTE: Interrupt Handling and Context Switching ----------
+//! - init register exception handler
+//! - yield to kernel
+//! - ienable and iset to turn on interrupt and set interrupt mode
+//! - Context: register context
+//! - Event: interrupt event
+
 #![allow(unused_imports)]
 #![allow(dead_code)]
 use core::arch::{asm, global_asm};

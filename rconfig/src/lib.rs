@@ -1,9 +1,11 @@
+//! rconfig show the all SETTING that all project used, it includes:
+//! * Interface of REMU and ROS, such as IO port
+//! * Interface of ROS and RAPPS, such as system call number
+//! * Layout of OS kernel, such as heap, start address of kernel
+//! * Standard input/output/error settings, such as stdin, stdout, stderr
+//! 
+
 #![no_std]
-/* This file show the all SETTING that all project used, it includes:
- * Interface of REMU and ROS, such as IO port
- * Interface of ROS and RAPPS, such as system call number
- * Layout of OS kernel, such as heap, start address of kernel
-*/
 
 /* Interface of REMU and ROS */
 pub mod ios {

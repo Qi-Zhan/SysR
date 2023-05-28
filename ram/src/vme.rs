@@ -1,3 +1,11 @@
+//! ----------------------- VME: Virtual Memory -----------------------
+//! bool     vme_init    (void *(*pgalloc)(int), void (*pgfree)(void *));
+//! void     protect     (AddrSpace *as);
+//! void     unprotect   (AddrSpace *as);
+//! void     map         (AddrSpace *as, void *vaddr, void *paddr, int prot);
+//! Context *ucontext    (AddrSpace *as, Area kstack, void *entry);
+//! Not implemented: :)
+
 pub struct AddrSpace {
     pub pgsize: usize,
     pub area: Area,
@@ -22,13 +30,3 @@ impl Area {
         addr >= self.start && addr < self.end
     }
 }
-
-
-
-
-// ----------------------- VME: Virtual Memory -----------------------
-// bool     vme_init    (void *(*pgalloc)(int), void (*pgfree)(void *));
-// void     protect     (AddrSpace *as);
-// void     unprotect   (AddrSpace *as);
-// void     map         (AddrSpace *as, void *vaddr, void *paddr, int prot);
-// Context *ucontext    (AddrSpace *as, Area kstack, void *entry);

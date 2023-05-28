@@ -1,8 +1,7 @@
-/* Lib Function  */
-
-use core::fmt::Write;
+//! AM Library functions
 
 use crate::io::IO;
+use core::fmt::Write;
 
 pub fn rand() -> u32 {
     static mut SEED: u32 = 0xdeadbeef;
@@ -54,7 +53,7 @@ pub unsafe fn memcpy(dest: *mut u8, src: *const u8, n: usize) {
 }
 
 /// # Safety
-/// 
+///
 /// `dest` must be a valid pointer.
 pub unsafe fn memset(dest: *mut u8, c: u8, n: usize) {
     let mut p = dest;

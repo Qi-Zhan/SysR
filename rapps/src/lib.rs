@@ -1,3 +1,7 @@
+//! # RApps
+//! provide syscall and stdio for user program
+//! 
+
 #![no_std]
 #![allow(unused_variables)]
 #![allow(unused_imports)]

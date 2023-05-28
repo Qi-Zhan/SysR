@@ -1,7 +1,11 @@
+//! OS Syscall implementation
+//! - exit not return
+//! - write
+//! - read  not implemented
+//! - open  not implemented
+
 use ram::{cte::Context, print, println};
-use rconfig::{syscall::*, std_io::*};
-
-
+use rconfig::{std_io::*, syscall::*};
 
 pub fn do_syscall(context: &mut Context) {
     match context.regs[SYSCALL_REG_NUM as usize] {
@@ -19,7 +23,7 @@ pub fn do_syscall(context: &mut Context) {
                 for _ in 0..len {
                     match fd {
                         STDOUT | STDERR => print!("{}", *p as char),
-                        _ => todo!("only support stdout, which is fd=1, but got fd={}", fd)
+                        _ => todo!("only support stdout, which is fd=1, but got fd={}", fd),
                     }
                     p = p.offset(1);
                 }

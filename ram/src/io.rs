@@ -1,4 +1,8 @@
-// -------------------- IOE: Input/Output Devices --------------------
+//! -------------------- IOE: Input/Output Devices --------------------
+//! - SerialPort
+//! - Timer
+//! - KeyBoard
+//! - Vga
 
 use core::fmt::Write;
 use rconfig::ios::*;
