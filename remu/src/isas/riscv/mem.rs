@@ -1,9 +1,8 @@
 use crate::info;
-use crate::ioe::{keyboard::Keyboard, serial::SerialPort, timer::Timer, vga::Screen, IO};
+use crate::ioe::{serial::SerialPort, timer::Timer, IO};
 use crate::isas::MemoryModel;
 use crate::{add_device, settings::*};
 
-// #[derive(Debug)]
 pub struct Mem {
     mem: Vec<u8>,
     pub devices: Vec<Box<dyn IO>>,
@@ -21,10 +20,14 @@ impl Mem {
         let mut devices: Vec<Box<dyn IO>> = Vec::new();
         // register devices
         add_device!(ENABLE_SERIAL, SerialPort, devices);
-        add_device!(ENABLE_KBD, Keyboard, devices);
-        add_device!(ENABLE_VGA, Screen, devices);
         add_device!(ENABLE_TIMER, Timer, devices);
-
+        // only enable vga and keyboard when sdl feature is enabled
+        #[cfg(feature = "sdl")]
+        {
+            use crate::ioe;
+            add_device!(ENABLE_KBD, ioe::keyboard::Keyboard, devices);
+            add_device!(ENABLE_VGA, ioe::vga::Screen, devices);
+        }
         Mem { mem, devices }
     }
 

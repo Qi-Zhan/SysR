@@ -10,5 +10,12 @@ colored = "2.0.0"
 console = "0.15.7"
 lazy_static = "1.4.0"
 linearparse-derive = { path = "./linearparse-derive" }
-sdl2 = "0.35.2"
+sdl2 = {version = "0.35.2", optional = true}
 rconfig = {path = "../rconfig"}
+
+[features]
+sdl = ["sdl2"]
+
+[[bin]]
+name = "sdl"
+required-features = ["sdl"]
