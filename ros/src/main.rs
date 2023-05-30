@@ -7,7 +7,7 @@ use loader::load_file;
 use ram::cte::{Context, Event};
 use ram::{klib::puts, tm::halt, *};
 
-mod allocater;
+mod allocator;
 mod filesystem;
 mod loader;
 mod syscall;

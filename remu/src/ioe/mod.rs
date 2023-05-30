@@ -1,8 +1,9 @@
 #[cfg(feature="sdl")]
 pub mod keyboard;
+#[cfg(feature="sdl")]
+pub mod vga;
 pub mod serial;
 pub mod timer;
-pub mod vga;
 
 pub trait IO {
     fn match_(&self, addr: u64) -> bool;

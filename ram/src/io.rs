@@ -46,10 +46,10 @@ impl IO for KeyBoard {
 }
 
 impl IO for SerialPort {
-    type Input = u8;
+    type Input = char;
     type Output = ();
     fn read() -> Self::Input {
-        unsafe { (SERIAL_PORT as *mut u8).read_volatile() }
+        unsafe { (SERIAL_PORT as *mut u8).read_volatile() as char }
     }
 }
 

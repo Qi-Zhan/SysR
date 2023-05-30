@@ -1,6 +1,6 @@
 //! AM Library functions
 
-use crate::io::IO;
+use crate::{io::IO, print};
 use core::fmt::Write;
 
 pub fn rand() -> u32 {
@@ -30,11 +30,31 @@ pub fn get_time() -> u64 {
     crate::io::Timer::read()
 }
 
-// pub fn getc() -> char {
-//     let mut buf = [0u8; 1];
-//     ioe_read(Device::SerialPort, &mut buf);
-//     buf[0] as char
-// }
+pub fn getc() -> char {
+    crate::io::SerialPort::read()
+}
+
+pub fn getline(buf: &mut [char]) -> usize {
+    let mut i = 0;
+    while i < buf.len() {
+        let c = getc();
+        if c == '\n' {
+            break;
+        }
+        buf[i] = c;
+        i += 1;
+    }
+    i
+}
+
+pub fn print_chars(buf: &[char]) {
+    for c in buf {
+        if c == &'\0' {
+            break;
+        }
+        print!("{}", c);
+    }
+}
 
 pub fn puts(s: &str) {
     let mut serial = crate::io::SerialPort;

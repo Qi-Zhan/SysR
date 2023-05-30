@@ -4,12 +4,15 @@
 #![no_std]
 
 use rapps::*;
-use rconfig::std_io::*;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     let hello = "Hello, world!\n";
-    let success = write(STDOUT, hello.as_ptr(), hello.len());
-    println!("write {} bytes", success);
+    let mut buffer: [u8; 100] = [0; 100];
+    loop {
+        print!("> ");
+        getline(&mut buffer);
+        println!("You said: {}", core::str::from_utf8(&buffer).unwrap());
+    }
     exit(0);
 }

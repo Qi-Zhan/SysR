@@ -125,8 +125,22 @@ pub fn puts(s: &str) {
     write(STDOUT, s.as_ptr(), s.len());
 }
 
+pub fn getline(buf: &mut [u8]) -> usize {
+    let mut i: usize = 0;
+    while i < buf.len() {
+        let mut c = 0u8;
+        read(STDIN, &mut c, 1);
+        print!("{}", c as char);
+        if c == 10 {
+            return i;
+        }
+        buf[i] = c;
+        i += 1;
+    }
+    i
+}
 
-/* dummy stdout */
+/// DummyStdout for std::fmt::Write
 pub struct DummyStdout;
 
 impl Write for DummyStdout {
@@ -135,7 +149,7 @@ impl Write for DummyStdout {
         Ok(())
     }
 }
-// // use write to implement print and println
+
 #[macro_export]
 macro_rules! println {
     () => (print!("\n"));

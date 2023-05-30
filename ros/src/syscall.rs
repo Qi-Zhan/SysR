@@ -4,7 +4,7 @@
 //! - read  not implemented
 //! - open  not implemented
 
-use ram::{cte::Context, print, println};
+use ram::{cte::Context, print, println, io::IO};
 use rconfig::{std_io::*, syscall::*};
 
 pub fn do_syscall(context: &mut Context) {
@@ -20,12 +20,33 @@ pub fn do_syscall(context: &mut Context) {
             let len = context.regs[SYSCALL_REG_ARG2 as usize];
             let mut p = buf;
             unsafe {
-                for _ in 0..len {
-                    match fd {
-                        STDOUT | STDERR => print!("{}", *p as char),
-                        _ => todo!("only support stdout, which is fd=1, but got fd={}", fd),
+                match fd {
+                    STDOUT | STDERR => {
+                        for _ in 0..len {
+                            print!("{}", *p as char);
+                            p = p.offset(1);
+                        }
                     }
-                    p = p.offset(1);
+                    _ => todo!("only support stdout/stderr, which is fd=1/2, but got fd={}", fd),
+                }
+            }
+            context.regs[SYSCALL_REG_RET as usize] = len;
+        }
+        SYSCALL_READ => {
+            let fd = context.regs[SYSCALL_REG_ARG0 as usize];
+            let buf = context.regs[SYSCALL_REG_ARG1 as usize] as *mut u8;
+            let len = context.regs[SYSCALL_REG_ARG2 as usize];
+            let mut p = buf;
+            unsafe {
+                match fd {
+                    STDIN => {
+                        // println!("buf = {:p}", buf);
+                        for _ in 0..len {
+                            *p = crate::io::SerialPort::read() as u8;
+                            p = p.offset(1);
+                        }
+                    }
+                    _ => todo!("only support stdin, which is fd=0, but got fd={}", fd),
                 }
             }
             context.regs[SYSCALL_REG_RET as usize] = len;

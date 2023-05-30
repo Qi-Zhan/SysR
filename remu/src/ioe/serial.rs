@@ -1,5 +1,6 @@
 use super::IO;
 use console::Term;
+use std::io::Write;
 
 #[derive(Debug)]
 pub(crate) struct SerialPort {
@@ -10,7 +11,11 @@ pub(crate) struct SerialPort {
 
 impl SerialPort {
     pub(crate) fn new(base: u64, irq: u8) -> Self {
-        Self { base, irq , term: Term::stdout()}
+        Self {
+            base,
+            irq,
+            term: Term::stdout(),
+        }
     }
 }
 
@@ -35,6 +40,8 @@ impl IO for SerialPort {
 
     fn write(&mut self, _addr: u64, value: u64) {
         print!("{}", value as u8 as char);
+        // TODO: maybe influence performance
+        std::io::stdout().flush().unwrap();
     }
 
     fn update(&mut self) {}
