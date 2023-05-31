@@ -4,6 +4,7 @@
 //! - read  not implemented
 //! - open  not implemented
 
+use alloc::boxed::Box;
 use ram::{cte::Context, print, println, io::IO};
 use rconfig::{std_io::*, syscall::*};
 
@@ -50,6 +51,11 @@ pub fn do_syscall(context: &mut Context) {
                 }
             }
             context.regs[SYSCALL_REG_RET as usize] = len;
+        }
+        SYSCALL_SBARK => {
+            let size = context.regs[SYSCALL_REG_ARG0 as usize];
+            let addr = Box::into_raw(Box::new([0u8; 4096])) as u32;
+            context.regs[SYSCALL_REG_RET as usize] = addr;
         }
         _ => {
             println!("unknown syscall");

@@ -35,6 +35,7 @@ pub mod syscall {
     pub const SYSCALL_WAITPID: u32= 260;
     pub const SYSCALL_GETPID: u32= 172;
     pub const SYSCALL_SLEEP: u32= 101;
+    pub const SYSCALL_SBARK: u32= 400;
     /// syscall register index
     pub const SYSCALL_REG_NUM: u32= 17; // a7
     pub const SYSCALL_REG_ARG0: u32= 10; // a0

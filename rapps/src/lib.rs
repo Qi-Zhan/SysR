@@ -1,6 +1,6 @@
 //! # RApps
 //! provide syscall and stdio for user program
-//! 
+//!
 
 #![no_std]
 #![allow(unused_variables)]
@@ -115,6 +115,10 @@ pub fn read(fd: u32, buf: *mut u8, len: usize) -> u32 {
     syscall!(SYSCALL_READ, fd, buf as u32, len as u32)
 }
 
+pub fn alloc(size: usize) -> u32 {
+    syscall!(SYSCALL_SBARK, size as u32)
+}
+
 pub fn exit(code: u32) -> ! {
     syscall!(SYSCALL_EXIT, code);
     panic!("should not reach here, syscall exit failed");
@@ -147,6 +151,21 @@ impl Write for DummyStdout {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
         puts(s);
         Ok(())
+    }
+}
+
+pub struct DummyAllocator;
+
+#[global_allocator]
+static ALLOCATOR: DummyAllocator = DummyAllocator;
+
+unsafe impl core::alloc::GlobalAlloc for DummyAllocator {
+    unsafe fn alloc(&self, layout: core::alloc::Layout) -> *mut u8 {
+        alloc(layout.size()) as *mut u8
+    }
+
+    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: core::alloc::Layout) {
+        // do nothing
     }
 }
 
