@@ -39,6 +39,4 @@ impl IO for Timer {
     }
 
     fn write(&mut self, _addr: u64, _value: u64) {}
-
-    fn update(&mut self) {}
 }

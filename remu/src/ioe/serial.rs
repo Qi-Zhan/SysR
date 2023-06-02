@@ -43,6 +43,4 @@ impl IO for SerialPort {
         // TODO: maybe influence performance
         std::io::stdout().flush().unwrap();
     }
-
-    fn update(&mut self) {}
 }

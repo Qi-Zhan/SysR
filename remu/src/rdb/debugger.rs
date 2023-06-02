@@ -94,7 +94,6 @@ impl Default for Debugger {
 
 impl Debugger {
     pub fn new() -> Debugger {
-        println!("{}", crate::util::RDB_LOGO);
         Debugger {
             state: DebuggerState::Init,
             bps: Breakpoints::new(),
@@ -216,6 +215,7 @@ impl Debugger {
     }
 
     pub fn debug(&mut self, cpu: &mut impl ISA) {
+        println!("{}", crate::util::RDB_LOGO);
         loop {
             let mut input = String::new();
             print!("{} ", "(rdb)".truecolor(169, 169, 169).bold());

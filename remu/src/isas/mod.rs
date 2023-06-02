@@ -1,6 +1,7 @@
-pub mod riscv;
+pub(crate) mod riscv;
 
 use crate::error::RError;
+pub use riscv::RV32CPU;
 
 pub trait ISA: MemoryModel + RegisterModel + Sized {
     fn name(&self) -> String;

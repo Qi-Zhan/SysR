@@ -5,5 +5,5 @@ cargo build --target riscv32i-unknown-none-elf --bin shell --release
 cd ros
 cargo build --target riscv32i-unknown-none-elf --bin ros --release    
 cd ..
-cargo run --bin debugger --release -- target/riscv32i-unknown-none-elf/release/ros 
+cargo run --bin run --release -- target/riscv32i-unknown-none-elf/release/ros 
 

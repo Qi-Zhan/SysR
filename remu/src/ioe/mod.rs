@@ -1,15 +1,24 @@
-#[cfg(feature="sdl")]
+#[cfg(feature = "sdl")]
 pub mod keyboard;
-#[cfg(feature="sdl")]
-pub mod vga;
-pub mod serial;
-pub mod timer;
+mod serial;
+mod timer;
+#[cfg(feature = "sdl")]
+mod vga;
+
+#[cfg(feature = "sdl")]
+pub use keyboard::Keyboard;
+pub(crate) use serial::SerialPort;
+pub(crate) use timer::Timer;
+#[cfg(feature = "sdl")]
+pub use vga::Screen;
 
 pub trait IO {
     fn match_(&self, addr: u64) -> bool;
     fn read(&mut self, addr: u64) -> Option<u32>;
     fn write(&mut self, addr: u64, value: u64);
-    fn update(&mut self);
+    fn update(&mut self) {
+        // do nothing by default
+    }
     fn name(&self) -> &str;
 }
 

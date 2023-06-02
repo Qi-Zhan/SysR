@@ -117,7 +117,7 @@ pub enum KBEvent {
     Release(Key),
 }
 
-pub(crate) struct Keyboard {
+pub struct Keyboard {
     base: u64,
     events: Vec<KBEvent>,
 }
@@ -163,8 +163,8 @@ impl IO for Keyboard {
             self.events.push(event);
         }
     }
-
-    fn update(&mut self) {}
+    
+    /// the update of keyboard is done by sdl2, so we do nothing here
 }
 
 fn sdlcode2u32(sdlcode: sdl2::keyboard::Keycode) -> Key {

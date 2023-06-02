@@ -127,12 +127,6 @@ impl ISA for RV32CPU {
     }
 
     fn execute(&mut self, inst_code: u32) -> Result<u32, RError> {
-        // every time execute an instruction, mcycle and minstret should be increased
-        // self.write_register_by_name("mcycle", self.read_register_by_name("mcycle").unwrap() + 1);
-        // self.write_register_by_name(
-        //     "minstret",
-        //     self.read_register_by_name("minstret").unwrap() + 1,
-        // );
         let inst = Instruction::decode(inst_code)?;
         inst.execute(self)
     }
@@ -141,7 +135,6 @@ impl ISA for RV32CPU {
         static mut START_TIME: u32 = 1;
         unsafe {
             if START_TIME % 10000 == 0 {
-                // debug!("update devices");
                 self.mems.update_devices();
             }
             START_TIME += 1;

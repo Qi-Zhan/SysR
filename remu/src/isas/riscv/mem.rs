@@ -1,5 +1,5 @@
 use crate::info;
-use crate::ioe::{serial::SerialPort, timer::Timer, IO};
+use crate::ioe::{SerialPort, Timer, IO};
 use crate::isas::MemoryModel;
 use crate::{add_device, settings::*};
 
@@ -25,8 +25,8 @@ impl Mem {
         #[cfg(feature = "sdl")]
         {
             use crate::ioe;
-            add_device!(ENABLE_KBD, ioe::keyboard::Keyboard, devices);
-            add_device!(ENABLE_VGA, ioe::vga::Screen, devices);
+            add_device!(ENABLE_KBD, ioe::Keyboard, devices);
+            add_device!(ENABLE_VGA, ioe::Screen, devices);
         }
         Mem { mem, devices }
     }

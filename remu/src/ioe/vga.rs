@@ -57,5 +57,5 @@ impl IO for Screen {
         self.buffer[offset] = value;
     }
 
-    fn update(&mut self) {}
+    /// the update of screen is done by sdl2, so we do nothing here
 }
