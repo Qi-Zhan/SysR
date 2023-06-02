@@ -19,8 +19,8 @@ We aim to implement almost everything in a computer system, including CPU, Memor
 |                           ROS                               |
 +-------------------------------------------------------------+
 |                                                             |
-|                           SBI                               |
-|                           AM4R                              |
+|                                                             |
+|                           RAM                               |
 +-------------------------------------------------------------+
 |                                                             |
 |                    (CPU, IO, Memory)                        |
@@ -35,7 +35,8 @@ TBD
 ## Abstract Machine Example
 
 A simple typing game: 
-https://github.com/Qi-Zhan/SysR/assets/89050446/8f8076b9-20dd-4fd4-b0a2-c2f8752b8544
+![sdl](https://github.com/Qi-Zhan/SysR/assets/89050446/df7e74dc-1460-4214-af57-317aace421dd)
+
 
 
 ## Usage
