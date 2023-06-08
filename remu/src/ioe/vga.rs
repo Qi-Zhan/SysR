@@ -57,5 +57,4 @@ impl IO for Screen {
         self.buffer[offset] = value;
     }
 
-    /// the update of screen is done by sdl2, so we do nothing here
 }

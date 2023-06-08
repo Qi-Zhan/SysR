@@ -164,7 +164,6 @@ impl IO for Keyboard {
         }
     }
     
-    /// the update of keyboard is done by sdl2, so we do nothing here
 }
 
 fn sdlcode2u32(sdlcode: sdl2::keyboard::Keycode) -> Key {
