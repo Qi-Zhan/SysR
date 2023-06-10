@@ -1,19 +1,24 @@
 //! OS Syscall implementation
 //! - exit not return
 //! - write
-//! - read  not implemented
+//! - read
 //! - open  not implemented
 
 use alloc::boxed::Box;
-use ram::{cte::Context, print, println, io::IO};
+use ram::{cte::Context, io::IO, print, println};
 use rconfig::{std_io::*, syscall::*};
+
+use crate::task::{TM, TaskState};
 
 pub fn do_syscall(context: &mut Context) {
     match context.regs[SYSCALL_REG_NUM as usize] {
         SYSCALL_EXIT => {
-            println!("SYSCALL_EXIT");
-            println!("exit code: {}", context.regs[SYSCALL_REG_RET as usize]);
-            loop {}
+            unsafe {
+                let id = TM.as_ref().unwrap().current;
+                TM.as_mut().unwrap().tasks[id].state = TaskState::Exit;
+                TM.as_mut().unwrap().schedule(context);
+            }
+            crate::halt(0);
         }
         SYSCALL_WRITE => {
             let fd = context.regs[SYSCALL_REG_ARG0 as usize];
@@ -28,10 +33,14 @@ pub fn do_syscall(context: &mut Context) {
                             p = p.offset(1);
                         }
                     }
-                    _ => todo!("only support stdout/stderr, which is fd=1/2, but got fd={}", fd),
+                    _ => todo!(
+                        "only support stdout/stderr, which is fd=1/2, but got fd={}",
+                        fd
+                    ),
                 }
             }
             context.regs[SYSCALL_REG_RET as usize] = len;
+            context.mepc += 4;
         }
         SYSCALL_READ => {
             let fd = context.regs[SYSCALL_REG_ARG0 as usize];
@@ -51,11 +60,19 @@ pub fn do_syscall(context: &mut Context) {
                 }
             }
             context.regs[SYSCALL_REG_RET as usize] = len;
+            context.mepc += 4;
         }
         SYSCALL_SBARK => {
-            let size = context.regs[SYSCALL_REG_ARG0 as usize];
+            let _size = context.regs[SYSCALL_REG_ARG0 as usize];
             let addr = Box::into_raw(Box::new([0u8; 4096])) as u32;
             context.regs[SYSCALL_REG_RET as usize] = addr;
+            context.mepc += 4;
+        }
+        SYSCALL_GETPID => {
+            unsafe {
+                context.regs[SYSCALL_REG_RET as usize] = TM.as_ref().unwrap().current as u32;
+            }
+            context.mepc += 4;
         }
         _ => {
             println!("unknown syscall");

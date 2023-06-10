@@ -23,8 +23,6 @@ macro_rules! info {
         // 📓: debug status message
         // 📔: Or anything you like and want to recognize immediately by color
         print!("{}", "[INFO] ".blue().bold());
-        // print!("{:<40} [{}:{}:{}] ",
-        // $crate::function!(), file!(), line!(), column!());
         print!("[{}:{}] ", file!(), line!());
         println!($($arg)*);
     })

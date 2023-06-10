@@ -6,6 +6,7 @@
 #![allow(unused_variables)]
 #![allow(unused_imports)]
 #![allow(unused_mut)]
+#![allow(unused_assignments)]
 use core::{arch::asm, fmt::Write};
 use rconfig::{std_io::*, syscall::*};
 
@@ -14,7 +15,7 @@ use rconfig::{std_io::*, syscall::*};
 macro_rules! syscall {
     ($num: expr) => {
         {
-            let ret: u32 = 0;
+            let mut ret: u32 = 0;
             #[cfg(target_arch="riscv32")]
             unsafe {
                 asm!("ecall", in("a7") $num, out("a0") ret);
@@ -117,6 +118,10 @@ pub fn read(fd: u32, buf: *mut u8, len: usize) -> u32 {
 
 pub fn alloc(size: usize) -> u32 {
     syscall!(SYSCALL_SBARK, size as u32)
+}
+
+pub fn getpid() -> u32 {
+    syscall!(SYSCALL_GETPID)
 }
 
 pub fn exit(code: u32) -> ! {

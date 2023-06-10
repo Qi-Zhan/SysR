@@ -1,5 +1,7 @@
+#![allow(dead_code)]
+#![allow(unused_assignments)]
 use core::alloc::{GlobalAlloc, Layout};
-use ram::{print, println};
+use ram::println;
 use rconfig::layout;
 
 const HEAP_START: usize = layout::KERNEL_HEAP_START;
@@ -41,9 +43,6 @@ impl<A> Locked<A> {
             inner: Mutex::new(inner),
         }
     }
-    pub fn lock(&mut self) -> MutexGuard<A> {
-        self.inner.lock()
-    }
 }
 
 pub struct MyAllocator {
@@ -65,13 +64,13 @@ fn align_up(addr: usize, align: usize) -> usize {
 
 unsafe impl GlobalAlloc for Locked<MyAllocator> {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        println!(
-            "allocating {} bytes with alignment {} from {:#x} to {:#x}",
-            layout.size(),
-            layout.align(),
-            INDEX,
-            INDEX + layout.size()
-        );
+        // println!(
+        //     "allocating {} bytes with alignment {} from {:#x} to {:#x}",
+        //     layout.size(),
+        //     layout.align(),
+        //     INDEX,
+        //     INDEX + layout.size()
+        // );
         let alloc_start = align_up(INDEX, layout.align());
         let alloc_end = match alloc_start.checked_add(layout.size()) {
             Some(alloc_end) => alloc_end,
@@ -85,7 +84,7 @@ unsafe impl GlobalAlloc for Locked<MyAllocator> {
             alloc_start as *mut u8
         }
     }
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+    unsafe fn dealloc(&self, _ptr: *mut u8, layout: Layout) {
         println!(
             "deallocating {} bytes with alignment {} from {:#x} to {:#x}",
             layout.size(),

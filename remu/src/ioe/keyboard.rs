@@ -11,6 +11,7 @@ pub enum Key {
     Char(char),
     F(u8),
     Ctrl(char),
+    Shift(char),
     Alt(char),
     CapsLock,
     NumLock,
@@ -37,6 +38,7 @@ impl From<Key> for u32 {
             Key::Char(c) => c as u32,
             Key::Ctrl(c) => (c as u32) & 0x1F,
             Key::Alt(c) => (c as u32) | 0x80,
+            Key::Shift(c) => (c as u32) | 0x80,
             Key::CapsLock => 0x3A,
             Key::NumLock => 0x45,
             Key::ScrollLock => 0x46,
@@ -219,8 +221,10 @@ fn sdlcode2u32(sdlcode: sdl2::keyboard::Keycode) -> Key {
         Tab => Key::Tab,
         Space => Key::Space,
         LCtrl => Key::Ctrl('l'),
-        // LShift => Key::Shift('l'),
-        _ => todo!("sdlcode2u32: {:?}", sdlcode),
+        LShift => Key::Shift('l'),
+        RCtrl => Key::Ctrl('r'),
+        RShift => Key::Shift('r'),
+        _ => todo!("{:?} keyboard is not implemented", sdlcode),
     }
 }
 

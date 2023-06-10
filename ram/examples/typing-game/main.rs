@@ -6,7 +6,7 @@ mod font;
 use ram::klib::get_time;
 use ram::klib::rand_range;
 use ram::tm::halt;
-use ram::{io::*, print, println};
+use ram::{io::*, println};
 
 use font::FONT;
 

@@ -1,17 +1,18 @@
 #![no_std]
 #![no_main]
 
-extern crate alloc;
-use core::arch::asm;
+use crate::task::TaskManager;
 use loader::load_file;
 use ram::cte::{Context, Event};
-use ram::{klib::puts, tm::halt, *};
+use ram::{tm::halt, *};
+use task::{Task, TM};
+extern crate alloc;
 
 mod allocator;
 mod filesystem;
 mod loader;
 mod syscall;
-mod utils;
+mod task;
 
 #[no_mangle]
 pub fn on_interrupt(event: Event, context: &mut Context) {
@@ -20,14 +21,13 @@ pub fn on_interrupt(event: Event, context: &mut Context) {
             context.mepc += 4;
         }
         Event::Error => {
-            puts("error\n");
+            println!("error");
         }
         Event::Syscall => {
             syscall::do_syscall(context);
-            context.mepc += 4;
         }
         _ => {
-            puts("unknown\n");
+            println!("Unknown Event");
             halt(1);
         }
     }
@@ -37,33 +37,12 @@ pub fn on_interrupt(event: Event, context: &mut Context) {
 pub extern "C" fn _start() -> ! {
     cte::init(on_interrupt);
     let fs = filesystem::FileSystem::new();
-    let entry = load_file(&fs.files[0]);
-    // jump to entry
+    let entry = load_file(&fs.files[0], 0);
     unsafe {
-        asm!(
-            "jr {0}",
-            in(reg) entry,
-        )
+        TM = Some(TaskManager::new());
+        TM.as_mut().unwrap().add(Task::new("shell", entry));
+        TM.as_mut().unwrap().run();
     }
-    halt(0);
-    let mut count = 0;
-    loop {
-        cte::yield_();
-        count += 1;
-        println!("count {count}");
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use alloc::vec;
-    #[test]
-    fn alloc_test() {
-        let mut vec = vec![1, 2, 3];
-        assert_eq!(vec.len(), 3);
-        for i in 0..10000 {
-            vec.push(i);
-            assert_eq!(vec.len(), i + 4)
-        }
-    }
+    // should not reach here
+    halt(1);
 }

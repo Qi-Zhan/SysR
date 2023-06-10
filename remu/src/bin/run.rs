@@ -1,6 +1,8 @@
 use remu::exes::{Exe, ELF};
+use remu::{info, warn};
 use remu::isas::{ISA, RV32CPU};
 use remu::rdb::Debugger;
+use std::process::exit;
 
 fn main() {
     let args = std::env::args().collect::<Vec<String>>();
@@ -16,7 +18,18 @@ fn main() {
     };
     exe.load_binary(&mut cpu).unwrap();
     if args.len() == 2 {
-        cpu.run().unwrap();
+        if let Err(e) = cpu.run() {
+            match e {
+                remu::error::RError::Ebreak(exitcode) => {
+                    info!("Program exited with code {}", exitcode);
+                    exit(0);
+                }
+                _ => {
+                    warn!("Program exited with error: {:?}", e);
+                    exit(1);
+                }
+            }
+        }
     } else {
         debugger.debug(&mut cpu);
     }

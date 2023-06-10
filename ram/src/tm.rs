@@ -3,9 +3,10 @@
 
 #![allow(unused_imports)]
 #![allow(unused_variables)]
+#![allow(clippy::empty_loop)]
 use core::{arch::asm, fmt::Write};
 
-pub fn halt(code: i8) {
+pub fn halt(code: i8) -> ! {
     #[cfg(target_arch = "riscv32")]
     unsafe {
         asm!(
@@ -14,7 +15,7 @@ pub fn halt(code: i8) {
             x0 = in(reg) code,
         );
     }
-    // TODO: implement for other architectures
+    loop {}
 }
 
 #[panic_handler]

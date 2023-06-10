@@ -1,7 +1,5 @@
 use rconfig::layout::USER_APP_BASE;
 
-const APPS: [&str; 4] = ["shell", "cat", "ls", "echo"];
-
 macro_rules! copy_app {
     ($app: literal, $base: expr) => {
         let app = include_bytes!(concat!(
@@ -17,15 +15,11 @@ macro_rules! copy_app {
     };
 }
 
-// shell, cat, ls, etc.
-unsafe fn load_apps(fs: &mut FileSystem) {
+/// load shell, simple
+unsafe fn load_app(fs: &mut FileSystem) {
     copy_app!("shell", USER_APP_BASE);
     // add shell to fs
     fs.add_file(Finfo::new("shell", 0, USER_APP_BASE));
-
-    // copy_app!("cat", USER_APP_BASE + USER_APP_SIZE);
-    // copy_app!("ls", USER_APP_BASE + USER_APP_SIZE * 2);
-    // copy_app!("echo", USER_APP_BASE + USER_APP_SIZE * 3);
 }
 
 #[derive(Copy, Clone)]
@@ -57,7 +51,7 @@ impl FileSystem {
     pub fn new() -> Self {
         let mut fs = Self::default();
         unsafe {
-            load_apps(&mut fs);
+            load_app(&mut fs);
         }
         fs
     }
@@ -70,14 +64,5 @@ impl FileSystem {
             }
         }
         panic!("too many files");
-    }
-
-    pub fn get_file(&self, name: &str) -> Option<&Finfo> {
-        for i in 0..16 {
-            if self.files[i].name == name {
-                return Some(&self.files[i]);
-            }
-        }
-        None
     }
 }

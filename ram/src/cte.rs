@@ -1,3 +1,4 @@
+#![allow(unreachable_code)]
 //! ---------- CTE: Interrupt Handling and Context Switching ----------
 //! - init register exception handler
 //! - yield to kernel
@@ -7,6 +8,7 @@
 
 #![allow(unused_imports)]
 #![allow(dead_code)]
+#![allow(unused_assignments)]
 use core::arch::{asm, global_asm};
 
 global_asm!(include_str!("trap.S"));
@@ -19,12 +21,11 @@ pub fn init(irq: fn(Event, &mut Context)) {
     unsafe {
         IRQ = Some(irq);
     }
-    #[cfg(target_arch="riscv32")]
+    #[cfg(target_arch = "riscv32")]
     unsafe {
         asm!(
             "la t0, am_asm_trap",
             "csrw mtvec, t0",
-            // mstatus初始化为0x1800.
             "csrw mstatus, {x1}",
             x1 = in(reg) 0x1800,
         );
@@ -35,13 +36,11 @@ pub fn init(irq: fn(Event, &mut Context)) {
 #[no_mangle]
 pub fn _am_handler(context: &mut Context) {
     let event = match context.mcause {
-        0xb => {
-            match context.regs[17] {
-                0xffffffff => Event::Yield,
-                _ => Event::Syscall,
-            }
-        }
-        _ =>  Event::Error,
+        0xb => match context.regs[17] {
+            0xffffffff => Event::Yield,
+            _ => Event::Syscall,
+        },
+        _ => Event::Error,
     };
     unsafe {
         IRQ.unwrap()(event, context);
@@ -51,25 +50,40 @@ pub fn _am_handler(context: &mut Context) {
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct Context {
-    pub regs:       [u32; 32],
-    pub mcause:     u32,
-    pub mstatus:    u32,
-    pub mepc:       u32,
+    pub regs: [u32; 32],
+    pub mcause: u32,
+    pub mstatus: u32,
+    pub mepc: u32,
+}
+
+impl Context {
+    pub fn new(entry: u32) -> Self {
+        Context {
+            regs: [0; 32],
+            mcause: 0,
+            mstatus: 0,
+            mepc: entry,
+        }
+    }
+
+    pub fn assign(&mut self, context: &Context) {
+        self.regs = context.regs;
+        self.mcause = context.mcause;
+        self.mstatus = context.mstatus;
+        self.mepc = context.mepc;
+    }
 }
 
 #[no_mangle]
 pub fn yield_() {
-    #[cfg(target_arch="riscv32")]
+    #[cfg(target_arch = "riscv32")]
     unsafe {
-        asm!(
-            "li a7, -1",
-            "ecall",
-        );
+        asm!("li a7, -1", "ecall",);
     }
 }
 
 pub fn ienable() -> bool {
-    #[cfg(target_arch="riscv32")]
+    #[cfg(target_arch = "riscv32")]
     unsafe {
         let mut old: u32 = 0;
         asm!(
@@ -81,13 +95,13 @@ pub fn ienable() -> bool {
             x0 = out(reg) old,
             x1 = in(reg) 0x80,
         );
-        return old != 0
+        return old != 0;
     }
     false
 }
 
 pub fn iset(_enable: bool) {
-    #[cfg(target_arch="riscv32")]
+    #[cfg(target_arch = "riscv32")]
     unsafe {
         asm!(
             "csrrw x0, mie, {x1}",
@@ -108,4 +122,3 @@ pub enum Event {
 }
 
 // Context *kcontext    (Area kstack, void (*entry)(void *), void *arg);
-

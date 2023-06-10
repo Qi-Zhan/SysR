@@ -9,12 +9,6 @@ pub mod tm;
 pub mod vme;
 
 #[macro_export]
-macro_rules! println {
-    () => (print!("\n"));
-    ($($arg:tt)*) => (print!("{}\n", format_args!($($arg)*)));
-}
-
-#[macro_export]
 macro_rules! print {
     // implement the macro ourselves
     ($($arg:tt)*) => {
@@ -26,4 +20,10 @@ macro_rules! print {
             }
         }
     };
+}
+
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
 }

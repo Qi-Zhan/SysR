@@ -4,8 +4,7 @@
 extern crate alloc;
 use rapps::*;
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+#[no_mangle] pub extern "C" fn _start() -> ! {
     let mut vec = alloc::vec![1, 2, 3];
     for i in 0..100 {
         assert_eq!(vec.len(), i + 3);
@@ -14,4 +13,5 @@ pub extern "C" fn _start() -> ! {
     for i in 0..100 {
         println!("count {}", i)
     }
+    exit(0);
 }
