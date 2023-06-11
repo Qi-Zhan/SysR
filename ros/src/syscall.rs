@@ -6,7 +6,7 @@
 
 use alloc::boxed::Box;
 use ram::{cte::Context, io::IO, print, println};
-use rconfig::{std_io::*, syscall::*, layout::USER_APP_SIZE};
+use rconfig::{layout::USER_APP_SIZE, std_io::*, syscall::*};
 
 use crate::task::{TaskState, TM};
 
@@ -46,7 +46,9 @@ pub fn do_syscall(context: &mut Context) {
             let buf = context.regs[SYSCALL_REG_ARG1 as usize] as *mut u8;
             let len = context.regs[SYSCALL_REG_ARG2 as usize];
             // let mut p = buf;
-            let mut p = unsafe { buf.offset(TM.as_ref().unwrap().current as isize * USER_APP_SIZE as isize) };
+            let mut p = unsafe {
+                buf.offset(TM.as_ref().unwrap().current as isize * USER_APP_SIZE as isize)
+            };
             unsafe {
                 match fd {
                     STDIN => {

@@ -4,9 +4,8 @@ use super::reg::Regs;
 
 use crate::{
     error::RError,
-    isas::{Inst, ISA}
+    isas::{Inst, ISA},
 };
-
 
 type Imm = u32;
 type Src = (u32, u32);
@@ -16,10 +15,10 @@ type Fun7 = u32;
 type Opcode = u32;
 type Csr = u32;
 
-const ECALL: u32   = 0b0000_0000_0000_0000_0000_0000_0111_0011;
-const EBREAK: u32  = 0b0000_0000_0001_0000_0000_0000_0111_0011;
-const SRET : u32   = 0b0001_0000_0010_0000_0000_0000_0111_0011;
-const MRET : u32   = 0b0011_0000_0010_0000_0000_0000_0111_0011;
+const ECALL: u32 = 0b0000_0000_0000_0000_0000_0000_0111_0011;
+const EBREAK: u32 = 0b0000_0000_0001_0000_0000_0000_0111_0011;
+const SRET: u32 = 0b0001_0000_0010_0000_0000_0000_0111_0011;
+const MRET: u32 = 0b0011_0000_0010_0000_0000_0000_0111_0011;
 
 #[inline]
 fn opcode(code: u32) -> u32 {

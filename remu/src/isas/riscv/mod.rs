@@ -65,7 +65,6 @@ impl MemoryModel for RV32CPU {
         let index = match self.mode {
             PrivilegeMode::User => {
                 let id = self.read_register_by_name("mstatus").unwrap();
-                // crate::debug!("virtual address: {:#x}, physical address: {:#x}", index, index + size * id);
                 index + size * id
             }
             _ => index,
@@ -79,8 +78,6 @@ impl MemoryModel for RV32CPU {
         let index = match self.mode {
             PrivilegeMode::User => {
                 let id = self.read_register_by_name("mstatus").unwrap();
-                // crate::debug!("id: {:#x}", id);
-                // crate::debug!("virtual address: {:#x}, physical address: {:#x}", index, index + size * id);
                 index + size * id
             }
             _ => index,
