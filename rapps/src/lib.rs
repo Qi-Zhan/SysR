@@ -124,6 +124,12 @@ pub fn getpid() -> u32 {
     syscall!(SYSCALL_GETPID)
 }
 
+pub fn yield_() {
+    unsafe {
+        asm!("li a7, -1", "ecall");
+    }
+}
+
 pub fn exit(code: u32) -> ! {
     syscall!(SYSCALL_EXIT, code);
     panic!("should not reach here, syscall exit failed");

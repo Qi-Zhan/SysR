@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use ram::{io::*, println, print, tm::halt};
+use ram::{io::*, println, tm::halt};
 
 const WIDTH : usize = 400;
 const HEIGHT: usize = 300;

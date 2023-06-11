@@ -10,13 +10,11 @@ const REG_NUM: usize = 32;
 const PRIVILEGE_REG_NUM: usize = 0x1000;
 
 lazy_static! {
-
     static ref INDEX2NAME: [&'static str; REG_NUM] = [
         "zero", "ra", "sp", "gp", "tp", "t0", "t1", "t2", "s0", "s1", "a0", "a1", "a2", "a3", "a4",
         "a5", "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "t3", "t4",
         "t5", "t6",
     ];
-
     static ref NAME2INDEX: HashMap<&'static str, u32> = {
         let mut m = HashMap::new();
         for i in 0..REG_NUM {
@@ -24,31 +22,52 @@ lazy_static! {
         }
         m
     };
-
     static ref INDEX2CSR: HashMap<u16, &'static str> = {
         let csr_list = vec![
-            (0x001, "fflags"), (0x002, "frm"), (0x003, "fcsr"),
-            (0x100, "sstatus"), (0x104, "sie"), (0x105, "stvec"),
-            (0x106, "scounteren"), (0x140, "sscratch"), (0x141, "sepc"),
-            (0x142, "scause"), (0x143, "stval"), (0x144, "sip"),
+            (0x001, "fflags"),
+            (0x002, "frm"),
+            (0x003, "fcsr"),
+            (0x100, "sstatus"),
+            (0x104, "sie"),
+            (0x105, "stvec"),
+            (0x106, "scounteren"),
+            (0x140, "sscratch"),
+            (0x141, "sepc"),
+            (0x142, "scause"),
+            (0x143, "stval"),
+            (0x144, "sip"),
             (0x180, "satp"),
-            (0xC00, "cyclel"), (0xC01, "time"), (0xC02, "instret"),
-            (0xC80, "cycleh"), (0xC81, "timeh"), (0xC82, "instreth"),
-            (0x300, "mstatus"), (0x301, "misa"), (0x302, "medeleg"),
-            (0x303, "mideleg"), (0x304, "mie"), (0x305, "mtvec"),
-            (0x306, "mcounteren"), (0x310, "mscratch"), (0x340, "mscratch"),
-            (0x341, "mepc"), (0x342, "mcause"), (0x343, "mtval"),
-            (0x344, "mip"), (0x34A, "mtinst"),
-            (0x7A0, "mcycle"), (0x7A1, "minstret"), (0xB00, "mcycleh"), (0xB01, "minstreth"),
-            (0x300, "mstatus")
-            ];
+            (0xC00, "cyclel"),
+            (0xC01, "time"),
+            (0xC02, "instret"),
+            (0xC80, "cycleh"),
+            (0xC81, "timeh"),
+            (0xC82, "instreth"),
+            (0x300, "mstatus"),
+            (0x301, "misa"),
+            (0x302, "medeleg"),
+            (0x303, "mideleg"),
+            (0x304, "mie"),
+            (0x305, "mtvec"),
+            (0x306, "mcounteren"),
+            (0x310, "mscratch"),
+            (0x340, "mscratch"),
+            (0x341, "mepc"),
+            (0x342, "mcause"),
+            (0x343, "mtval"),
+            (0x344, "mip"),
+            (0x34A, "mtinst"),
+            (0x7A0, "mcycle"),
+            (0x7A1, "minstret"),
+            (0xB00, "mcycleh"),
+            (0xB01, "minstreth"),
+        ];
         let mut m = HashMap::new();
         csr_list.iter().for_each(|(index, name)| {
             m.insert(*index, *name);
         });
         m
     };
-
     static ref CSR2INDEX: HashMap<&'static str, u16> = {
         let mut m = HashMap::new();
         INDEX2CSR.iter().for_each(|(index, name)| {
@@ -56,16 +75,13 @@ lazy_static! {
         });
         m
     };
-
 }
 
 /// RISC-V Register Model
 #[derive(Debug, Clone)]
 pub struct Regs {
     regs: [u32; REG_NUM],
-
     pc: u32,
-
     csr: [u32; 0x1000],
 }
 

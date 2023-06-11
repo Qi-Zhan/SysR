@@ -8,6 +8,7 @@ use std::ops::IndexMut;
 use instruction::Instruction;
 use crate::error::RError;
 use crate::isas::{ISA, MemoryModel, RegisterModel, Inst};
+use crate::warn;
 
 pub struct RV32CPU {
     regs: reg::Regs,
@@ -127,8 +128,13 @@ impl ISA for RV32CPU {
     }
 
     fn execute(&mut self, inst_code: u32) -> Result<u32, RError> {
-        let inst = Instruction::decode(inst_code)?;
-        inst.execute(self)
+        match Instruction::decode(inst_code) {
+            Ok(inst) => inst.execute(self),
+            Err(err) => {
+                warn!("invalid code at {:x}", self.regs.pc());
+                Err(err)
+            }
+        }
     }
 
     fn device_update(&mut self) -> Result<(), RError> {

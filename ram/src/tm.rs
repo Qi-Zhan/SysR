@@ -24,6 +24,5 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
     use crate::{print, println};
     print!("\x1b[1;31m");
     println!("{}", _info);
-
     loop {}
 }

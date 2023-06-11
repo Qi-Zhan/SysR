@@ -9,19 +9,13 @@ macro_rules! function {
         }
         let name = type_name_of(f);
         name.strip_suffix("::f").unwrap()
-    }}
+    }};
 }
 
 #[macro_export]
 macro_rules! info {
     ($($arg:tt)*) => ({
         use colored::Colorize;
-        // 📕: error message
-        // 📙: warning message
-        // 📗: ok status message
-        // 📘: action message
-        // 📓: debug status message
-        // 📔: Or anything you like and want to recognize immediately by color
         print!("{}", "[INFO] ".blue().bold());
         print!("[{}:{}] ", file!(), line!());
         println!($($arg)*);
@@ -32,7 +26,7 @@ macro_rules! info {
 macro_rules! warn {
     ($($arg:tt)*) => ({
         use colored::Colorize;
-        print!("{}, ", "[WARN] ".yellow().bold());
+        print!("{}", "[WARN] ".yellow().bold());
         print!("{} [{}:{}:{}] ",
         $crate::function!(), file!(), line!(), column!());
         println!($($arg)*);
@@ -71,7 +65,6 @@ macro_rules! fatal {
         println!($($arg)*);
     })
 }
-
 
 pub trait LinearParse {
     fn linearparse(input: &[u8]) -> Self;

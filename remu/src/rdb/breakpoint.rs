@@ -1,5 +1,5 @@
-use crate::isas::ISA;
 use super::eval::eval;
+use crate::isas::ISA;
 
 struct Breakpoint {
     valid: bool,
@@ -48,8 +48,9 @@ impl Breakpoints {
                         return Some(i as u8);
                     }
                 }
-                self.breakpoints.push(Breakpoint::new(exp.to_string(), value));
-                Some((self.breakpoints.len()-1) as u8)
+                self.breakpoints
+                    .push(Breakpoint::new(exp.to_string(), value));
+                Some((self.breakpoints.len() - 1) as u8)
             }
             None => None,
         }
@@ -94,5 +95,4 @@ impl Breakpoints {
         }
         false
     }
-
 }

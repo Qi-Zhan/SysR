@@ -16,7 +16,7 @@ pub fn rand_range(min: u32, max: u32) -> u32 {
     rand() % (max - min) + min
 }
 
-/// actually do not need, just implement it in future string
+/// actually do not need
 pub fn atoi(s: &str) -> i32 {
     let mut res = 0;
     for c in s.chars() {

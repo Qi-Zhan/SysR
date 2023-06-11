@@ -18,7 +18,6 @@ pub fn do_syscall(context: &mut Context) {
                 TM.as_mut().unwrap().tasks[id].state = TaskState::Exit;
                 TM.as_mut().unwrap().schedule(context);
             }
-            crate::halt(0);
         }
         SYSCALL_WRITE => {
             let fd = context.regs[SYSCALL_REG_ARG0 as usize];

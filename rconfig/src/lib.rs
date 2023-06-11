@@ -3,7 +3,6 @@
 //! * Interface of ROS and RAPPS, such as system call number
 //! * Layout of OS kernel, such as heap, start address of kernel
 //! * Standard input/output/error settings, such as stdin, stdout, stderr
-//! 
 
 #![no_std]
 
@@ -68,7 +67,7 @@ pub mod layout {
     pub const KERNEL_HEAP_START: usize = 0x84000000;
     pub const KERNEL_HEAP_END: usize = 0xa0000000;
     pub const USER_APP_BASE: usize = 0x83000000;
-    pub const USER_APP_SIZE: usize = 0x100000; // every app 1MB
+    pub const USER_APP_SIZE: usize = 0x500000;
 }
 
 /* Standard input/output/error settings */

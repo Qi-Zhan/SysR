@@ -26,8 +26,8 @@ pub fn init(irq: fn(Event, &mut Context)) {
         asm!(
             "la t0, am_asm_trap",
             "csrw mtvec, t0",
-            "csrw mstatus, {x1}",
-            x1 = in(reg) 0x1800,
+            // "csrw mstatus, {x1}",
+            // x1 = in(reg) 0x1800,
         );
     }
     iset(true); // turn on interrupt
@@ -66,11 +66,11 @@ impl Context {
         }
     }
 
-    pub fn assign(&mut self, context: &Context) {
-        self.regs = context.regs;
-        self.mcause = context.mcause;
-        self.mstatus = context.mstatus;
-        self.mepc = context.mepc;
+    pub fn assign_to(&self, context: &mut Context) {
+        context.regs = self.regs;
+        context.mcause = self.mcause;
+        context.mstatus = self.mstatus;
+        context.mepc = self.mepc;
     }
 }
 
@@ -78,7 +78,7 @@ impl Context {
 pub fn yield_() {
     #[cfg(target_arch = "riscv32")]
     unsafe {
-        asm!("li a7, -1", "ecall",);
+        asm!("li a7, -1", "ecall");
     }
 }
 

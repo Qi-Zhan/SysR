@@ -15,11 +15,14 @@ macro_rules! copy_app {
     };
 }
 
-/// load shell, simple
+/// load shell, simple1, simple2
 unsafe fn load_app(fs: &mut FileSystem) {
     copy_app!("shell", USER_APP_BASE);
-    // add shell to fs
     fs.add_file(Finfo::new("shell", 0, USER_APP_BASE));
+    copy_app!("simple1", USER_APP_BASE + 0x500000);
+    fs.add_file(Finfo::new("simple1", 0, USER_APP_BASE + 0x500000));
+    copy_app!("simple2", USER_APP_BASE + 0xa00000);
+    fs.add_file(Finfo::new("simple2", 0, USER_APP_BASE + 0xa00000));
 }
 
 #[derive(Copy, Clone)]

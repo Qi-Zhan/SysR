@@ -65,11 +65,18 @@ impl TaskManager {
         while cur != self.current {
             if self.tasks[cur].state != TaskState::Exit {
                 self.tasks[cur].state = TaskState::Running;
-                self.tasks[cur].context.assign(context);
+                self.tasks[cur].context.assign_to(context);
                 self.current = cur;
+                println!("next run {} name {:x}", self.tasks[cur].name, context.mepc);
                 return;
             }
             cur = (cur + 1) % self.tasks.len();
+        }
+        if self.tasks[cur].state == TaskState::Ready {
+            self.tasks[cur].state = TaskState::Running;
+            self.tasks[cur].context.assign_to(context);
+            self.current = cur;
+            return;
         }
         println!("All tasks are exited");
         halt(0);
