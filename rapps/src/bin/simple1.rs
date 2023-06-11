@@ -7,8 +7,9 @@ use rapps::*;
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     let id = getpid();
-    for i in 1..10 {
-        println!("my pid is {}, i = {}", id, i);
+    for i in 0..10 {
+        println!("[user] my pid is {}, i = {}", id, i);
+        yield_();
     }
     exit(0);
 }

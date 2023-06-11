@@ -24,11 +24,11 @@ pub struct Task {
 }
 
 impl Task {
-    pub fn new(name: &'static str, entry: u32) -> Self {
+    pub fn new(name: &'static str, entry: u32, id: usize) -> Self {
         Self {
             name,
             state: TaskState::Ready,
-            context: Context::new(entry),
+            context: Context::new(entry, id),
         }
     }
 }
@@ -44,7 +44,9 @@ impl TaskManager {
     pub fn run(&self) {
         unsafe {
             core::arch::asm!(
-                "jr {0}",
+                "csrw mepc, {0}",
+                "mret",
+                // "jr {0}",
                 in(reg) self.tasks[self.current].context.mepc,
             )
         }
@@ -67,7 +69,6 @@ impl TaskManager {
                 self.tasks[cur].state = TaskState::Running;
                 self.tasks[cur].context.assign_to(context);
                 self.current = cur;
-                println!("next run {} name {:x}", self.tasks[cur].name, context.mepc);
                 return;
             }
             cur = (cur + 1) % self.tasks.len();

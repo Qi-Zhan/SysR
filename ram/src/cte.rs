@@ -57,11 +57,11 @@ pub struct Context {
 }
 
 impl Context {
-    pub fn new(entry: u32) -> Self {
+    pub fn new(entry: u32, id: usize) -> Self {
         Context {
             regs: [0; 32],
             mcause: 0,
-            mstatus: 0,
+            mstatus: id as u32,
             mepc: entry,
         }
     }

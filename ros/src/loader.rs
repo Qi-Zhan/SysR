@@ -1,5 +1,4 @@
 use crate::filesystem::Finfo;
-use ram::println;
 
 #[repr(C)]
 #[derive(Debug)]
@@ -62,12 +61,9 @@ pub fn load_file(info: &Finfo, base: usize) -> u32 {
             for index in filesz..memsz {
                 unsafe { *((index + vaddr + base) as *mut u8) = 0 };
             }
-            println!("load: {:x} {:x} {:x}", vaddr, filesz, memsz);
         }
         p += u16::from_le_bytes(elf.phentsize) as usize;
     }
 
-    let entry = u32::from_le_bytes(elf.entry);
-    println!("{:x}", entry + base as u32);
-    entry + base as u32
+    u32::from_le_bytes(elf.entry)
 }

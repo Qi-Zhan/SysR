@@ -15,7 +15,7 @@ pub fn halt(code: i8) -> ! {
             x0 = in(reg) code,
         );
     }
-    loop {}
+    panic!("should not reach here");
 }
 
 #[panic_handler]

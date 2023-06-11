@@ -18,10 +18,11 @@ mod task;
 pub fn on_interrupt(event: Event, context: &mut Context) {
     match event {
         Event::Yield => {
-            println!("yield");
             context.mepc += 4;
             unsafe {
                 let cur = TM.as_mut().unwrap().current;
+                // save current context
+                context.assign_to(&mut TM.as_mut().unwrap().tasks[cur].context);
                 TM.as_mut().unwrap().tasks[cur].state = TaskState::Ready;
                 TM.as_mut().unwrap().schedule(context)
             };
@@ -45,11 +46,13 @@ pub extern "C" fn _start() -> ! {
     let fs = filesystem::FileSystem::new();
     unsafe {
         TM = Some(TaskManager::new());
-        for i in 0..3 {
+        for i in 0..16 {
+            if fs.files[i].name == "" {
+                break;
+            }
             let entry = load_file(&fs.files[i], i * 0x500000);
             let name = fs.files[i].name;
-            println!("entry {:x}", entry);
-            TM.as_mut().unwrap().add(Task::new(name, entry));
+            TM.as_mut().unwrap().add(Task::new(name, entry, i));
         }
         TM.as_mut().unwrap().run();
     }

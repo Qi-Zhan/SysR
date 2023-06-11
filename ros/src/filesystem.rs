@@ -1,4 +1,4 @@
-use rconfig::layout::USER_APP_BASE;
+use rconfig::layout::{USER_APP_BASE, USER_APP_SIZE};
 
 macro_rules! copy_app {
     ($app: literal, $base: expr) => {
@@ -17,12 +17,15 @@ macro_rules! copy_app {
 
 /// load shell, simple1, simple2
 unsafe fn load_app(fs: &mut FileSystem) {
-    copy_app!("shell", USER_APP_BASE);
-    fs.add_file(Finfo::new("shell", 0, USER_APP_BASE));
-    copy_app!("simple1", USER_APP_BASE + 0x500000);
-    fs.add_file(Finfo::new("simple1", 0, USER_APP_BASE + 0x500000));
-    copy_app!("simple2", USER_APP_BASE + 0xa00000);
-    fs.add_file(Finfo::new("simple2", 0, USER_APP_BASE + 0xa00000));
+    let mut index = 0;
+    copy_app!("shell", USER_APP_BASE + USER_APP_SIZE * index);
+    fs.add_file(Finfo::new("shell", 0, USER_APP_BASE + USER_APP_SIZE * index));
+    index += 1;
+    copy_app!("simple1", USER_APP_BASE + USER_APP_SIZE * index);
+    fs.add_file(Finfo::new("simple1", 0, USER_APP_BASE + USER_APP_SIZE * index));
+    index += 1;
+    copy_app!("simple2", USER_APP_BASE + USER_APP_SIZE * index);
+    fs.add_file(Finfo::new("simple2", 0, USER_APP_BASE + USER_APP_SIZE * index));
 }
 
 #[derive(Copy, Clone)]

@@ -516,6 +516,8 @@ impl Inst for Instruction {
             Instruction::CSRType(csr, (rs1, _), funct3, rd, _) => {
                 let assemble = self.assemble();
                 if assemble == ECALL {
+                    // user mode -> supervisor mode
+                    cpu.priviledge_level_up();
                     cpu.write_register_by_name("mepc", cpu.pc()); // save pc
                     cpu.write_register_by_name("mcause", 0x0000000b); // ecall
                     return Ok(cpu.read_register_by_name("mtvec").unwrap());
@@ -526,10 +528,12 @@ impl Inst for Instruction {
                     ));
                 } else if assemble == SRET {
                     // sret
+                    cpu.priviledge_level_down();
                     let return_value = cpu.read_register_by_name("sepc").unwrap();
                     return Ok(return_value);
                 } else if assemble == MRET {
                     // mret
+                    cpu.priviledge_level_down();
                     let return_value = cpu.read_register_by_name("mepc").unwrap();
                     return Ok(return_value);
                 }

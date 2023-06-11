@@ -39,6 +39,10 @@ pub trait ISA: MemoryModel + RegisterModel + Sized {
     fn disassemble(&mut self, addr: u32) -> Result<String, RError>;
 
     fn execute(&mut self, inst_code: u32) -> Result<u32, RError>;
+
+    fn priviledge_level_down(&mut self);
+
+    fn priviledge_level_up(&mut self);
 }
 
 pub trait MemoryModel {

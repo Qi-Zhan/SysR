@@ -1,26 +1,26 @@
-pub mod reg;
-pub mod mem;
 pub mod instruction;
+pub mod mem;
+pub mod reg;
 
 use std::ops::Index;
 use std::ops::IndexMut;
 
-use instruction::Instruction;
 use crate::error::RError;
-use crate::isas::{ISA, MemoryModel, RegisterModel, Inst};
+use crate::isas::{Inst, MemoryModel, RegisterModel, ISA};
 use crate::warn;
+use instruction::Instruction;
 
 pub struct RV32CPU {
     regs: reg::Regs,
     pub mems: mem::Mem,
-    pub mode: PrivilegeMode,
+    mode: PrivilegeMode,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum PrivilegeMode {
     User = 0,
     Supervisor = 1,
-    Reserved = 2,
+    // Reserved = 2,
     Machine = 3,
 }
 
@@ -29,7 +29,7 @@ impl Default for RV32CPU {
         RV32CPU {
             regs: reg::Regs::new(),
             mems: mem::Mem::new(),
-            mode: PrivilegeMode::Machine,
+            mode: PrivilegeMode::Supervisor,
         }
     }
 }
@@ -39,7 +39,7 @@ impl RV32CPU {
         RV32CPU {
             regs,
             mems,
-            mode: PrivilegeMode::Machine,
+            mode: PrivilegeMode::Supervisor,
         }
     }
 }
@@ -60,16 +60,36 @@ impl IndexMut<u32> for RV32CPU {
 
 impl MemoryModel for RV32CPU {
     fn load_mem(&mut self, index: u32, bytes: u8) -> Option<u32> {
+        // virtual address for user mode
+        let size = rconfig::layout::USER_APP_SIZE as u32;
+        let index = match self.mode {
+            PrivilegeMode::User => {
+                let id = self.read_register_by_name("mstatus").unwrap();
+                // crate::debug!("virtual address: {:#x}, physical address: {:#x}", index, index + size * id);
+                index + size * id
+            }
+            _ => index,
+        };
         self.mems.load_mem(index, bytes)
     }
 
     fn store_mem(&mut self, index: u32, bytes: u8, value: u32) {
+        // virtual address for user mode
+        let size = rconfig::layout::USER_APP_SIZE as u32;
+        let index = match self.mode {
+            PrivilegeMode::User => {
+                let id = self.read_register_by_name("mstatus").unwrap();
+                // crate::debug!("id: {:#x}", id);
+                // crate::debug!("virtual address: {:#x}, physical address: {:#x}", index, index + size * id);
+                index + size * id
+            }
+            _ => index,
+        };
         self.mems.store_mem(index, bytes, value);
     }
 }
 
 impl RegisterModel for RV32CPU {
-
     #[inline]
     fn read_register_by_name(&self, name: &str) -> Option<u32> {
         self.regs.read_register_by_name(name)
@@ -109,7 +129,6 @@ impl RegisterModel for RV32CPU {
     fn update_pc(&mut self, pc: u32) {
         self.regs.update_pc(pc);
     }
-
 }
 
 impl ISA for RV32CPU {
@@ -148,6 +167,21 @@ impl ISA for RV32CPU {
         Ok(())
     }
 
+    fn priviledge_level_down(&mut self) {
+        self.mode = match self.mode {
+            PrivilegeMode::User => PrivilegeMode::User,
+            PrivilegeMode::Supervisor => PrivilegeMode::User,
+            PrivilegeMode::Machine => PrivilegeMode::Supervisor,
+        }
+    }
+
+    fn priviledge_level_up(&mut self) {
+        self.mode = match self.mode {
+            PrivilegeMode::User => PrivilegeMode::Supervisor,
+            PrivilegeMode::Supervisor => PrivilegeMode::Machine,
+            PrivilegeMode::Machine => PrivilegeMode::Machine,
+        }
+    }
 }
 
 #[cfg(test)]
