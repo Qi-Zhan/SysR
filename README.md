@@ -41,7 +41,6 @@ make play # sdl is required
 ## OS Example
 
 A simple OS run on REMU based on RAM:
-add a picture link here
 ![asciicast](os.png)
 
 ```
