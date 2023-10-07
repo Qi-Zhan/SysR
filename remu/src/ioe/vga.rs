@@ -42,9 +42,9 @@ impl IO for Screen {
 
     fn read(&mut self, addr: u64) -> Option<u32> {
         let offset = if addr < self.address {
-            addr 
+            addr
         } else {
-            addr - self.address - self.size() 
+            addr - self.address - self.size()
         };
         let offset = offset as usize;
         Some(self.buffer[offset])
@@ -56,5 +56,4 @@ impl IO for Screen {
         let value = value as u32;
         self.buffer[offset] = value;
     }
-
 }

@@ -1,6 +1,6 @@
 use std::process::exit;
 
-use remu::exes::{ELF, Exe};
+use remu::exes::{Exe, ELF};
 
 /// my implementation of readelf to test the elf parser
 /// it **only** supports the following options:
@@ -23,18 +23,16 @@ Options:
     let option = args[1].as_str();
     let file = &args[2];
     match ELF::parse_path(file) {
-        Ok(elf) => {
-            match option {
-                "-h" => elf.show_header(),
-                "-l" => elf.show_program_headers(),
-                "-S" => elf.show_section_headers(),
-                "-s" => elf.show_symbol_table(),
-                _ => {
-                    eprintln!("Invalid option");
-                    exit(1);
-                }
+        Ok(elf) => match option {
+            "-h" => elf.show_header(),
+            "-l" => elf.show_program_headers(),
+            "-S" => elf.show_section_headers(),
+            "-s" => elf.show_symbol_table(),
+            _ => {
+                eprintln!("Invalid option");
+                exit(1);
             }
-        }
+        },
         Err(e) => {
             eprintln!("{}", e);
             exit(1);

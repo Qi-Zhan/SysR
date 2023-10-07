@@ -1,9 +1,9 @@
-mod simplexe;
 mod elf;
 mod elformat;
+mod simplexe;
 
-pub use simplexe::SimpleExe;
 pub use elf::ELF;
+pub use simplexe::SimpleExe;
 
 use crate::error::RError;
 use crate::isas::ISA;

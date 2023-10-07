@@ -1,6 +1,6 @@
-use remu::exes::{ELF, Exe};
+use remu::exes::{Exe, ELF};
 use remu::ioe::keyboard::KBEvent;
-use remu::isas::{RV32CPU, ISA};
+use remu::isas::{ISA, RV32CPU};
 use remu::{fatal, info, warn};
 use sdl2::event::Event;
 use sdl2::pixels::PixelFormatEnum;

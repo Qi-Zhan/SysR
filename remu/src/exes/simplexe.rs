@@ -83,8 +83,7 @@ impl Exe for SimpleExe {
             self.entry = *entry;
         } else if let Some(entry) = self.labels.get("main") {
             self.entry = *entry;
-        }
-        else {
+        } else {
             return Err(RError::Other("no entry point".to_string()));
         }
         Ok(())
@@ -116,17 +115,15 @@ impl SimpleExe {
                     .name_to_index(tokens[1])
                     .ok_or(RError::InvalidAssembly(assembly.clone()))?;
                 match parse_str(tokens[2]) {
-                    Ok(imm) => {
-                        match tokens[0] {
-                            "lui" => Ok(vec![Instruction::UType(imm << 12, rd, 0b0110111).assemble()]),
-                            "auipc" => Ok(vec![Instruction::UType(imm, rd, 0b0010111).assemble()]),
-                            "jal" => Ok(vec![Instruction::JType(imm, rd, 0b1101111).assemble()]),
-                            "li" => {
-                                todo!("li")
-                            }
-                            _ => Err(RError::InvalidAssembly(assembly.clone())),
+                    Ok(imm) => match tokens[0] {
+                        "lui" => Ok(vec![Instruction::UType(imm << 12, rd, 0b0110111).assemble()]),
+                        "auipc" => Ok(vec![Instruction::UType(imm, rd, 0b0010111).assemble()]),
+                        "jal" => Ok(vec![Instruction::JType(imm, rd, 0b1101111).assemble()]),
+                        "li" => {
+                            todo!("li")
                         }
-                    }
+                        _ => Err(RError::InvalidAssembly(assembly.clone())),
+                    },
                     _ => Err(RError::InvalidAssembly(assembly.clone())),
                 }
             }
@@ -356,7 +353,6 @@ mod tests {
         println!("{:#?}", exe.asm);
         exe.load_binary(&mut cpu).unwrap();
         assert_eq!(cpu.pc(), 0x80000000);
-
     }
 
     #[test]

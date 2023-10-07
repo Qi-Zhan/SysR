@@ -3,14 +3,14 @@
 
 use ram::{io::*, println, tm::halt};
 
-const WIDTH : usize = 400;
+const WIDTH: usize = 400;
 const HEIGHT: usize = 300;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    let p1:&[u8; WIDTH*HEIGHT*3] = include_bytes!("p1.bin");
-    let p2:&[u8; WIDTH*HEIGHT*3] = include_bytes!("p2.bin");
-    
+    let p1: &[u8; WIDTH * HEIGHT * 3] = include_bytes!("p1.bin");
+    let p2: &[u8; WIDTH * HEIGHT * 3] = include_bytes!("p2.bin");
+
     let mut picture1 = [0_u32; WIDTH * HEIGHT];
     let mut picture2 = [0_u32; WIDTH * HEIGHT];
     println!("init p1");
@@ -38,5 +38,5 @@ pub extern "C" fn _start() -> ! {
                 _ => {}
             }
         }
-    };
+    }
 }

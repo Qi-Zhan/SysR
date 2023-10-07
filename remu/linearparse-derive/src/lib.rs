@@ -65,4 +65,3 @@ fn impl_linear_parse(ast: &DeriveInput) -> TokenStream {
     };
     gen.into()
 }
-

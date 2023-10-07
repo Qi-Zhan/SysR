@@ -1,7 +1,7 @@
 use remu::exes::{Exe, ELF};
-use remu::{info, warn};
 use remu::isas::{ISA, RV32CPU};
 use remu::rdb::Debugger;
+use remu::{info, warn};
 use std::process::exit;
 
 fn main() {

@@ -275,8 +275,8 @@ mod tests {
 
     #[test]
     fn test_eval() {
-        use crate::isas::RegisterModel;
         use crate::isas::riscv::RV32CPU;
+        use crate::isas::RegisterModel;
 
         let mut cpu = RV32CPU::default();
 

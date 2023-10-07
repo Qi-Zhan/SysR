@@ -108,7 +108,6 @@ define_enum!(
     StratusTechnologiesOpenVOS = 18
 );
 
-
 define_enum!(
     EType,
     u16,

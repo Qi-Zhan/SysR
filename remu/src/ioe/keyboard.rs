@@ -165,7 +165,6 @@ impl IO for Keyboard {
             self.events.push(event);
         }
     }
-    
 }
 
 fn sdlcode2u32(sdlcode: sdl2::keyboard::Keycode) -> Key {
@@ -256,8 +255,8 @@ impl From<Event> for KBEvent {
 mod tests {
     use sdl2::event::Event;
 
-    use crate::ioe::IO;
     use crate::ioe::keyboard::{KBEvent, Key};
+    use crate::ioe::IO;
 
     use super::super::KBD_ADDR;
     use super::Keyboard;

@@ -12,8 +12,8 @@ resolver = "2"
 
 [workspace.package]
 authors = ["Qi Zhan <qizhan@zju.edu.cn>"]
-description = "emulating computer system in Rust"
-repository = "https://github.com/Qi-Zhan/Just-For-Fun"
+description = "Emulating computer system in Rust"
+repository = "https://github.com/Qi-Zhan/SysR"
 
 [profile.release]
 debug = true
