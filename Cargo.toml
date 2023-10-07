@@ -8,9 +8,11 @@ members = [
     "rconfig",
 ]
 
+resolver = "2"
+
 [workspace.package]
 authors = ["Qi Zhan <qizhan@zju.edu.cn>"]
-description = "emulating all computer system"
+description = "emulating computer system in Rust"
 repository = "https://github.com/Qi-Zhan/Just-For-Fun"
 
 [profile.release]
